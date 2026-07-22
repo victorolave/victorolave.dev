@@ -1,0 +1,315 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Victor Olave — Design System (Tailwind v4 @theme inline)
+   Editorial / architectural blueprint
+   Deep gray-blue · Burgundy magenta · Serif + Sans pairing
+   ============================================================ */
+
+@theme inline {
+  /* ============================================================
+     COLORS — surfaces
+     Desaturated, warm-leaning slate. Not navy, not black.
+     ============================================================ */
+  --color-bg-base: #1A1D24;
+  --color-bg-surface: #21252E;
+  --color-bg-elevated: #282D38;
+  --color-bg-deep: #14171C;
+
+  /* Blueprint grid lines */
+  --color-grid-line: #262A33;
+  --color-grid-line-major: #2E333E;
+  --color-rule-line: #3A4051;
+
+  /* Magenta — burgundy/rose, NOT neon */
+  --color-rose: #C04970;
+  --color-rose-soft: #D87A99;
+  --color-rose-deep: #8C2B4A;
+  --color-rose-darker: #6B1F38;
+  --color-rose-subtle: #2D1822;
+  --color-rose-tint: #F5C9D5;
+  --color-rose-warm: #FBEFE7;
+
+  /* Foreground — slightly warm off-white */
+  --color-fg-primary: #E8E4DD;
+  --color-fg-secondary: #9CA0AC;
+  --color-fg-tertiary: #5C6172;
+  --color-fg-quaternary: #404552;
+  --color-fg-inverse: #1A1D24;
+
+  /* Borders */
+  --color-border: #2E333E;
+  --color-border-strong: #3A4051;
+  --color-border-rose: #C04970;
+
+  /* Semantic (muted, no neon) */
+  --color-success: #6FA887;
+  --color-warning: #C9A063;
+  --color-error: #B5616A;
+  --color-info: #7B96B8;
+
+  /* ============================================================
+     TYPOGRAPHY
+     ============================================================ */
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  /* Editorial type scale */
+  --text-display-2xl: clamp(3.5rem, 8vw, 6rem);
+  --text-display-xl: clamp(2.5rem, 5.5vw, 4.25rem);
+  --text-display-lg: clamp(2rem, 4vw, 3rem);
+
+  /* ============================================================
+     SPACING — 8px base, generous editorial scale
+     ============================================================ */
+  --spacing-gutter: 4rem;
+  --spacing-nav-h: 4.5rem;
+
+  /* Vertical section rhythm — three tiers, applied via utilities.
+     Keep section padding on these values so the page breathes evenly:
+       · standard section .... py-20  md:py-32   (80 / 128)
+       · feature panel ....... py-24  md:py-40   (96 / 160)  — Manifesto, Contact
+       · after a divider ..... pt-12  md:pt-16   (48 / 64)   — the divider IS the
+         title, so the section that follows ties its TOP to it and keeps the
+         standard bottom (pb-20 md:pb-32). Never pay full py- under a divider. */
+
+  /* ============================================================
+     RADII — minimal, architectural
+     ============================================================ */
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 6px;
+
+  /* ============================================================
+     MOTION
+     ============================================================ */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Lenis smooth-scroll — when active it owns the scroll, so disable the
+   native smooth behavior to avoid the two fighting. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body {
+  background-color: var(--color-bg-base);
+  color: var(--color-fg-primary);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: 0;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--color-bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
+
+::selection {
+  background: var(--color-rose);
+  color: var(--color-bg-base);
+}
+
+/* ============================================================
+   ROSE FIELD — shared impressionist ground for the Selected-work
+   divider + first featured case. A SINGLE sticky Grainient canvas
+   pins across the whole zone, so both sit on one continuous render
+   (two separate canvases would seam: different aspect ratio, time
+   phase and coordinate space make the pattern break at the join).
+   ============================================================ */
+.rose-field { position: relative; }
+
+.rose-field__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Pins for the whole rose zone so the painterly field stays put while
+   the divider scrolls over it and the first case pins on top. */
+.rose-field__bg-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background: var(--color-rose); /* no-WebGL fallback under the canvas */
+}
+
+/* Lift the real content (divider + work section) above the ground. */
+.rose-field > :not(.rose-field__bg) {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   TYPOGRAPHIC UTILITIES — used across editorial components
+   ============================================================ */
+
+.fraunces {
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 144, "SOFT" 50;
+}
+
+.fraunces-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-variation-settings: "opsz" 144, "SOFT" 100;
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-rose);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 32px;
+  height: 1px;
+  background: currentColor;
+}
+
+.sheet-mark {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-fg-quaternary);
+  letter-spacing: 0.1em;
+}
+
+/* ============================================================
+   ANIMATIONS — subtle "breathing" the design system asks for
+   ============================================================ */
+@keyframes breathe {
+  0%, 100% { opacity: 0.7; transform: translateY(0); }
+  50%      { opacity: 1;   transform: translateY(-2px); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slow-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 0.85; }
+}
+
+.animate-fade-up {
+  animation: fade-up 800ms var(--ease-out-expo) both;
+}
+
+/* Prevent flicker for reveal-driven elements when JS is available.
+   Without .js (no-JS fallback) everything stays visible. */
+html.js [data-reveal] > [data-reveal-child] {
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+/* Manifesto statement: words start dim and are brightened on scroll, word by
+   word, by setupManifestoReveal. Without JS they stay fully visible. */
+html.js [data-manifesto-word] {
+  opacity: 0.18;
+  will-change: opacity;
+}
+
+/* Light zone (e.g. the Contact flip): fade the dark-on-light side rails out
+   so they don't disappear into the white. */
+html.on-light [data-side-rail] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ============================================================
+   KINETIC HEADINGS — divider words rise letter-by-letter while the
+   Fraunces variable axes settle. The custom props are registered so
+   they interpolate numerically; setupKineticHeadings drives them.
+   ============================================================ */
+@property --kinetic-wght {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 340;
+}
+@property --kinetic-soft {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 100;
+}
+
+[data-kinetic] {
+  font-variation-settings:
+    "opsz" 144,
+    "SOFT" var(--kinetic-soft, 100),
+    "wght" var(--kinetic-wght, 340);
+}
+.kinetic-letter {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+html.js [data-kinetic] .kinetic-letter {
+  opacity: 0;
+  transform: translateY(0.45em);
+}
+
+/* ============================================================
+   MAGNETIC CTAs — the transition does the smoothing for the cursor pull.
+   ============================================================ */
+[data-magnetic] {
+  transition: transform 0.35s var(--ease-out-expo);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+  html { scroll-behavior: auto; }
+
+  /* When reduced motion is on, make all reveal targets visible immediately. */
+  html.js [data-reveal] > [data-reveal-child] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  /* No scroll-linked brightening under reduced motion — show the words fully. */
+  html.js [data-manifesto-word] {
+    opacity: 1 !important;
+  }
+  /* Kinetic letters appear at rest — no rise, no axis morph. */
+  html.js [data-kinetic] .kinetic-letter {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

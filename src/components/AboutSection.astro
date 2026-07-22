@@ -1,0 +1,91 @@
+---
+import { STACK } from "../data/projects";
+---
+
+<section
+  id="about"
+  class="relative bg-[var(--color-bg-deep)]"
+>
+  <div
+    class="relative mx-auto max-w-[1600px] px-4 pt-12 pb-20 md:px-12 md:pt-16 md:pb-32"
+    data-reveal
+  >
+    <div class="mb-16 grid grid-cols-1 gap-12 md:grid-cols-2 md:items-end md:gap-24">
+      <!-- LEFT: who -->
+      <div data-reveal-child>
+        <div class="eyebrow mb-8">A short biography</div>
+
+        <h3
+          data-fit
+          class="fraunces font-light leading-[0.95] tracking-[-0.04em] text-[var(--color-fg-primary)] text-[clamp(48px,7vw,112px)]"
+        >
+          <span class="block whitespace-nowrap" data-fit-line>Nine years of</span>
+          <span
+            class="block whitespace-nowrap fraunces-italic text-[var(--color-rose)]"
+            data-fit-line
+          >
+            considered
+          </span>
+          <span class="block whitespace-nowrap" data-fit-line>engineering.</span>
+        </h3>
+      </div>
+
+      <!-- RIGHT: bio paragraphs -->
+      <div class="flex flex-col gap-6" data-reveal-child>
+        <p
+          class="text-[var(--color-fg-secondary)]"
+          style="font-size: clamp(18px, 1.6vw, 22px); line-height: 1.5; letter-spacing: -0.01em;"
+        >
+          I build the systems behind useful products — React on the front,
+          TypeScript and Node on the back, Postgres underneath, and an
+          opinionated AI-native workflow connecting all three.
+        </p>
+        <p class="text-[16px] leading-[1.75] text-[var(--color-fg-secondary)]">
+          What I care about, in order: clarity of intent, predictability under
+          load, and giving the next person on the codebase a fair chance. I
+          like small teams that ship slowly on purpose and fast when it counts.
+        </p>
+        <p class="text-[16px] leading-[1.75] text-[var(--color-fg-secondary)]">
+          Based in Envigado, Colombia. Available for select engagements: contract
+          work, lead-engineer roles, technical advisory.
+        </p>
+      </div>
+    </div>
+
+    <!-- Stack -->
+    <div class="mt-20 border-t border-[var(--color-border)] pt-12 md:mt-24">
+      <div class="grid grid-cols-1 gap-12 md:grid-cols-[280px_1fr] md:gap-24">
+        <div data-reveal-child>
+          <div class="eyebrow mb-4">Stack</div>
+          <p
+            class="fraunces-italic text-[var(--color-fg-primary)]"
+            style="font-size: clamp(28px, 3.2vw, 44px); line-height: 1; letter-spacing: -0.03em;"
+          >
+            What I reach for.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-8 md:grid-cols-4">
+          {
+            STACK.map((s) => (
+              <div data-reveal-child>
+                <div
+                  class="fraunces-italic mb-4 text-[var(--color-rose)]"
+                  style="font-size: 20px;"
+                >
+                  {s.cat}
+                </div>
+                <ul class="flex flex-col gap-2">
+                  {s.items.map((item) => (
+                    <li class="border-b border-[var(--color-border)] pb-2 text-[16px] text-[var(--color-fg-primary)]">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

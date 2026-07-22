@@ -1,0 +1,142 @@
+---
+const items = [
+  {
+    quote: "Victor turned our tangled platform into a system we could actually reason about. Six weeks, zero downtime.",
+    name: "Lucía Reyes",
+    role: "CTO, Avena Health",
+    initials: "LR",
+  },
+  {
+    quote: "Rare combination — strong opinions, low ego. He delivered a migration the previous team had been afraid to touch for two years.",
+    name: "Andrés Cabral",
+    role: "VP Eng, Ledgermark",
+    initials: "AC",
+  },
+  {
+    quote: "Our checkout went from 14 seconds to 2. He explained the why so the team could keep it that way.",
+    name: "Marina Solís",
+    role: "Product Lead, Hila",
+    initials: "MS",
+  },
+  {
+    quote: "He didn't just ship features — he left us with a mental model. Our juniors now make decisions seniors used to gatekeep.",
+    name: "Tomás Iriarte",
+    role: "Head of Engineering, Cobalt",
+    initials: "TI",
+  },
+  {
+    quote: "We hired him for a rescue and got an education. The codebase is calmer, and so is the team that maintains it.",
+    name: "Elena Vargas",
+    role: "Founder, Maremoto",
+    initials: "EV",
+  },
+  {
+    quote: "Most consultants leave a black box behind. Victor left documentation, tests, and a team that understood every line.",
+    name: "Diego Halabi",
+    role: "Director of Tech, Nimbus Pay",
+    initials: "DH",
+  },
+];
+---
+
+<section id="words" class="relative bg-[var(--color-bg-base)]">
+  <div
+    class="relative mx-auto max-w-[1600px] px-4 pt-12 pb-20 md:px-12 md:pt-16 md:pb-32"
+    data-reveal
+  >
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
+      {
+        items.map((it) => (
+          <figure
+            class="testimonial group m-0 flex min-h-[360px] flex-col justify-between gap-10 rounded-[22px] p-8 md:p-9"
+            data-reveal-child
+          >
+            {/* Solid double-quote glyph — the signature mark, in brand rose */}
+            <svg
+              class="testimonial__mark"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.571-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-3.983v-10h9.983z" />
+            </svg>
+
+            <div class="flex flex-col gap-8">
+              <blockquote
+                class="m-0 font-sans font-normal text-[var(--color-fg-primary)]"
+                style="font-size: clamp(15px, 1.1vw, 17px); line-height: 1.6; letter-spacing: -0.005em;"
+              >
+                {it.quote}
+              </blockquote>
+
+              <figcaption class="flex items-center gap-3.5">
+                <div
+                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[12px] font-medium"
+                  style="background: var(--color-rose-subtle); color: var(--color-rose-tint); letter-spacing: 0.04em;"
+                >
+                  {it.initials}
+                </div>
+                <div>
+                  <div class="text-[14px] font-semibold text-[var(--color-fg-primary)]">
+                    {it.name}
+                  </div>
+                  <div class="mt-0.5 text-[13px] text-[var(--color-fg-secondary)]">
+                    {it.role}
+                  </div>
+                </div>
+              </figcaption>
+            </div>
+          </figure>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ── Testimonial card ──────────────────────────────────────────────
+     Flat elevated surface, soft floating shadow, generously rounded —
+     matching the reference. Solid rose quote glyph anchors the top, a
+     deliberate gap of breathing room, then quote and person at the base
+     (justify-between aligns mark and footer regardless of quote length).
+     Background lives ONLY here so it never collides with the scoped rule's
+     higher specificity. */
+  .testimonial {
+    background: var(--color-bg-elevated);
+    box-shadow: 0 18px 44px -22px rgba(0, 0, 0, 0.55);
+    transition:
+      transform 500ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .testimonial:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 28px 60px -24px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Solid quote glyph — prominent, in brand rose, lifts slightly on hover */
+  .testimonial__mark {
+    width: 2.75rem;
+    height: auto;
+    color: var(--color-rose);
+    transition:
+      transform 500ms cubic-bezier(0.16, 1, 0.3, 1),
+      color 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .testimonial:hover .testimonial__mark {
+    transform: translateY(-2px);
+    color: var(--color-rose-soft);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .testimonial,
+    .testimonial__mark {
+      transition: none;
+    }
+    .testimonial:hover {
+      transform: none;
+    }
+    .testimonial:hover .testimonial__mark {
+      transform: none;
+    }
+  }
+</style>

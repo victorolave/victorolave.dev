@@ -1,0 +1,75 @@
+---
+interface Props {
+  num?: string;       // kept for back-compat but unused
+  total?: string;     // kept for back-compat but unused
+  label: string;      // eyebrow label
+  word: string;       // big italic word — now rendered as <h2>
+  background?: string;
+  borderTop?: boolean;
+  tone?: "dark" | "rose"; // "rose" re-scopes text tokens for an accent bg
+}
+
+const {
+  label,
+  word,
+  background = "var(--color-bg-base)",
+  borderTop = true,
+  tone = "dark",
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    "relative overflow-hidden",
+    borderTop && "border-t border-[var(--color-border)]",
+  ]}
+  style={`background: ${background};`}
+>
+  <div
+    class:list={[
+      "relative mx-auto flex max-w-[1240px] flex-col items-center gap-6 px-6 py-10 text-center md:gap-8 md:px-12 md:py-16",
+      tone === "rose" && "divider--rose",
+    ]}
+    data-reveal
+  >
+    <!-- Eyebrow label -->
+    <span
+      class="font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)]"
+      style="letter-spacing: 0.22em;"
+      data-reveal-child
+    >
+      {label}
+    </span>
+
+    <!-- Big italic word — semantic h2. Split into letters for the kinetic
+         reveal (rise + Fraunces variable-axis settle); aria-label carries the
+         readable text so screen readers don't spell it out letter by letter. -->
+    <h2
+      class="fraunces-italic font-light leading-[0.95] text-[var(--color-rose)]"
+      style="font-size: clamp(56px, 10vw, 152px); letter-spacing: -0.05em;"
+      data-kinetic
+      aria-label={word}
+    >
+      <span aria-hidden="true">
+        {word.split("").map((ch) =>
+          ch === " " ? (
+            " "
+          ) : (
+            <span class="kinetic-letter" data-kinetic-letter>{ch}</span>
+          ),
+        )}
+      </span>
+    </h2>
+  </div>
+</div>
+
+<style>
+  /* Accent tone: the background prop carries the real rose on the OUTER
+     element; the text tokens are re-scoped here on the INNER, so the
+     `background: var(--color-rose)` above never resolves against this
+     override (which would turn the fill warm/white). */
+  .divider--rose {
+    --color-rose: var(--color-rose-warm);
+    --color-fg-tertiary: rgba(251, 239, 231, 0.78);
+  }
+</style>

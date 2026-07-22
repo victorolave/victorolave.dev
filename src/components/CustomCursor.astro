@@ -1,0 +1,38 @@
+---
+---
+
+<!-- Custom cursor — only active on desktop (hover:hover) -->
+<div
+  id="cursor-dot"
+  class="pointer-events-none fixed left-0 top-0 z-[90] hidden h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--color-rose)] mix-blend-difference"
+  aria-hidden="true"
+>
+</div>
+<div
+  id="cursor-ring"
+  class="pointer-events-none fixed left-0 top-0 z-[90] hidden h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--color-fg-primary)] mix-blend-difference transition-[width,height,border-color,background-color] duration-300"
+  aria-hidden="true"
+>
+  <span
+    id="cursor-label"
+    class="fraunces-italic absolute inset-0 flex items-center justify-center whitespace-nowrap text-[10px] uppercase text-[var(--color-fg-primary)] opacity-0 transition-opacity duration-200"
+    style="letter-spacing: 0.18em;"
+  >
+  </span>
+</div>
+
+<style>
+  @media (hover: hover) and (pointer: fine) {
+    html.cursor-ready,
+    html.cursor-ready body,
+    html.cursor-ready a,
+    html.cursor-ready button,
+    html.cursor-ready [role="button"] {
+      cursor: none;
+    }
+    html.cursor-ready #cursor-dot,
+    html.cursor-ready #cursor-ring {
+      display: block;
+    }
+  }
+</style>

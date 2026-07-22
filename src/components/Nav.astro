@@ -1,0 +1,163 @@
+---
+const links = [
+  { id: "work", label: "Work" },
+  { id: "about", label: "About" },
+  { id: "experience", label: "Experience" },
+  { id: "process", label: "Process" },
+  { id: "words", label: "Words" },
+  { id: "contact", label: "Contact" },
+];
+---
+
+<nav
+  id="primary-nav"
+  class="fixed inset-x-0 top-0 z-50 flex h-[64px] items-center justify-between border-b border-transparent px-4 transition-[transform,background-color,border-color] duration-300 md:h-[80px] md:px-12"
+  data-nav
+>
+  <!-- Wordmark -->
+  <a
+    href="#hero"
+    data-nav-link="hero"
+    data-cursor="Top"
+    data-magnetic="0.25"
+    class="fraunces inline-block text-[19px] font-light tracking-[-0.02em] text-[var(--color-fg-primary)] md:text-[22px]"
+    aria-label="Victor Olave — Home"
+  >
+    Victor Olave<span class="text-[var(--color-rose)]">.</span>
+  </a>
+
+  <!-- Center / right navigation -->
+  <div class="hidden items-center gap-9 md:flex">
+    {
+      links.map(({ id, label }) => (
+        <a
+          href={`#${id}`}
+          data-nav-link={id}
+          class="text-[14px] font-medium text-[var(--color-fg-secondary)] transition-colors duration-200 hover:text-[var(--color-fg-primary)] focus-visible:outline-none focus-visible:text-[var(--color-fg-primary)] focus-visible:underline focus-visible:underline-offset-4"
+        >
+          {label}
+        </a>
+      ))
+    }
+  </div>
+
+  <!-- Mobile burger — 44×44px touch target -->
+  <button
+    id="mobile-menu-button"
+    class="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-border-strong)] text-[var(--color-fg-primary)] md:hidden"
+    aria-label="Toggle menu"
+    aria-expanded="false"
+  >
+    <span class="block h-px w-4 bg-current"></span>
+  </button>
+</nav>
+
+<!-- Mobile drawer -->
+<div
+  id="mobile-menu"
+  class="fixed inset-x-0 top-[64px] z-40 hidden border-b border-[var(--color-border)] bg-[var(--color-bg-deep)] px-4 py-8 md:hidden"
+>
+  <div class="flex flex-col gap-1">
+    {
+      links.map(({ id, label }) => (
+        <a
+          href={`#${id}`}
+          data-mobile-link
+          class="flex items-baseline border-b border-[var(--color-border)] py-4 text-[15px] font-medium text-[var(--color-fg-primary)]"
+        >
+          {label}
+        </a>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  #primary-nav.nav-scrolled {
+    background: rgba(20, 23, 28, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+</style>
+
+<script>
+  // Page-order sections mapped to the nav link they should activate.
+  // Sections without their own nav link map to the nearest preceding linked
+  // section so the active highlight never goes blank.
+  // New DOM order: work → about → manifesto → process → words → skills → now → contact
+  const SECTION_MAP = [
+    { id: "work", nav: "work" },
+    { id: "about", nav: "about" },
+    { id: "experience", nav: "experience" },
+    { id: "manifesto", nav: "experience" },
+    { id: "process", nav: "process" },
+    { id: "words", nav: "words" },
+    { id: "skills", nav: "words" },
+    { id: "now", nav: "words" },
+    { id: "contact", nav: "contact" },
+  ];
+
+  const navLinks = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>("a[data-nav-link]"),
+  );
+
+  const setActive = (id: string) => {
+    navLinks.forEach((el) => {
+      if (el.dataset.navLink === "hero") return; // wordmark stays constant
+      const isActive = el.dataset.navLink === id;
+      el.classList.toggle("text-[var(--color-fg-primary)]", isActive);
+      el.classList.toggle("text-[var(--color-fg-secondary)]", !isActive);
+      // aria-current for accessibility
+      if (isActive) {
+        el.setAttribute("aria-current", "true");
+      } else {
+        el.removeAttribute("aria-current");
+      }
+    });
+  };
+
+  let lastY = 0;
+  const nav = document.querySelector<HTMLElement>("[data-nav]");
+
+  const onScroll = () => {
+    // Section spy
+    for (const { id, nav: navId } of SECTION_MAP) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      const r = el.getBoundingClientRect();
+      if (r.top <= 120 && r.bottom > 120) {
+        setActive(navId);
+        break;
+      }
+    }
+    if (nav) {
+      const y = window.scrollY;
+      // Solid background once we leave the very top
+      nav.classList.toggle("nav-scrolled", y > 24);
+      // Auto-hide when scrolling down past the hero
+      const goingDown = y > lastY;
+      const pastHero = y > window.innerHeight * 0.6;
+      nav.style.transform =
+        pastHero && goingDown ? "translateY(-100%)" : "translateY(0)";
+      lastY = y;
+    }
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // Mobile menu toggle
+  const mobileBtn = document.getElementById("mobile-menu-button");
+  const mobileMenu = document.getElementById("mobile-menu");
+  if (mobileBtn && mobileMenu) {
+    mobileBtn.addEventListener("click", () => {
+      const wasHidden = mobileMenu.classList.contains("hidden");
+      mobileMenu.classList.toggle("hidden");
+      mobileBtn.setAttribute("aria-expanded", wasHidden ? "true" : "false");
+    });
+    mobileMenu.querySelectorAll("[data-mobile-link]").forEach((a) => {
+      a.addEventListener("click", () => mobileMenu.classList.add("hidden"));
+    });
+  }
+</script>

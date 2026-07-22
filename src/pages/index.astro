@@ -1,0 +1,123 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Loader from "../components/Loader.astro";
+import CustomCursor from "../components/CustomCursor.astro";
+import ScrollProgress from "../components/ScrollProgress.astro";
+import Nav from "../components/Nav.astro";
+import SideRails from "../components/SideRails.astro";
+import Hero from "../components/Hero.astro";
+import Grainient from "../components/Grainient.astro";
+import SectionDivider from "../components/SectionDivider.astro";
+import ProcessSection from "../components/ProcessSection.astro";
+import WorkSection from "../components/WorkSection.astro";
+import ManifestoSection from "../components/ManifestoSection.astro";
+import TestimonialsSection from "../components/TestimonialsSection.astro";
+import NowSection from "../components/NowSection.astro";
+import AboutSection from "../components/AboutSection.astro";
+import ExperienceSection from "../components/ExperienceSection.astro";
+import SkillsSection from "../components/SkillsSection.astro";
+import ContactSection from "../components/ContactSection.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout>
+  <Loader />
+  <CustomCursor />
+  <ScrollProgress />
+  <Nav />
+  <SideRails />
+
+  <main>
+    <Hero />
+
+    <div class="rose-field">
+      <!-- One impressionist ground, pinned across the whole rose zone, so the
+           "Six projects." divider and the first featured case sit on the SAME
+           continuous painterly render — no seam between two separate canvases at
+           different aspect ratios. Solid rose underneath is the no-WebGL/JS
+           fallback; the opaque second case + masonry below cover it. -->
+      <div class="rose-field__bg" aria-hidden="true">
+        <div class="rose-field__bg-sticky">
+          <Grainient
+            class="h-full w-full"
+            color1="#D87A99"
+            color2="#C04970"
+            color3="#8C2B4A"
+            timeSpeed={0.12}
+            colorBalance={0.0}
+            contrast={1.2}
+            saturation={1.1}
+            grainAmount={0.11}
+            grainScale={2.4}
+            grainAnimated={false}
+            warpStrength={1.1}
+            warpFrequency={4.0}
+            warpAmplitude={85}
+            warpSpeed={1.6}
+            rotationAmount={300}
+            noiseScale={1.25}
+            blendSoftness={0.12}
+            zoom={1.1}
+          />
+        </div>
+      </div>
+
+      <SectionDivider
+        label="Selected work"
+        word="Six projects."
+        background="transparent"
+        tone="rose"
+        borderTop={false}
+      />
+      <WorkSection />
+    </div>
+
+    <SectionDivider
+      label="About"
+      word="Nine years."
+      background="var(--color-bg-deep)"
+    />
+    <AboutSection />
+
+    <SectionDivider
+      label="Experience"
+      word="Where I've been."
+      background="var(--color-bg-deep)"
+    />
+    <ExperienceSection />
+
+    <ManifestoSection />
+
+    <SectionDivider
+      label="Process"
+      word="How I work."
+      background="var(--color-bg-deep)"
+    />
+    <ProcessSection />
+
+    <SectionDivider
+      label="Kind words"
+      word="What they say."
+      background="var(--color-bg-base)"
+    />
+    <TestimonialsSection />
+
+    <SectionDivider
+      label="Skills"
+      word="What I use."
+      background="var(--color-bg-deep)"
+    />
+    <SkillsSection />
+
+    <SectionDivider
+      label="Right now"
+      word="Currently."
+      background="var(--color-bg-deep)"
+    />
+    <NowSection />
+
+    <ContactSection />
+  </main>
+
+  <Footer />
+</Layout>

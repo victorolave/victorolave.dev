@@ -1,0 +1,78 @@
+---
+const lines = [
+  { label: "Reading", value: '"A Pattern Language" — Christopher Alexander', kind: "book" },
+  { label: "Building", value: "A small CLI for ergonomic Postgres migrations", kind: "wip" },
+  { label: "Listening", value: "Sufjan Stevens, Caetano Veloso, lots of Bach", kind: "audio" },
+  { label: "Watching", value: "Severance S3, and the Mubi back catalog", kind: "watch" },
+  { label: "City", value: "Envigado, Colombia · GMT-5", kind: "place" },
+  { label: "Status", value: "Open for Q3 2026 engagements", kind: "work" },
+];
+---
+
+<section
+  id="now"
+  class="relative bg-[var(--color-bg-deep)]"
+>
+  <div
+    class="relative mx-auto max-w-[1600px] px-4 pt-12 pb-20 md:px-12 md:pt-16 md:pb-32"
+    data-reveal
+  >
+    <div class="grid grid-cols-1 gap-12 md:grid-cols-[0.7fr_1.3fr] md:gap-24">
+      <!-- Left: header + intro -->
+      <div data-reveal-child>
+        <p
+          class="fraunces font-light leading-[1] tracking-[-0.04em] text-[var(--color-fg-primary)]"
+          style="font-size: clamp(40px, 5vw, 76px);"
+        >
+          A small<br />
+          <em class="fraunces-italic text-[var(--color-rose)]">logbook</em>.
+        </p>
+        <p
+          class="mt-8 max-w-[360px] text-[16px] leading-[1.7] text-[var(--color-fg-secondary)]"
+        >
+          Where my attention is, this season. Updated when something genuinely
+          shifts — about every six weeks.
+        </p>
+        <div
+          class="mt-12 inline-flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)]"
+          style="letter-spacing: 0.22em;"
+        >
+          <span class="h-2 w-2 animate-pulse rounded-full bg-[var(--color-rose)]"></span>
+          Last updated · May 2026
+        </div>
+      </div>
+
+      <!-- Right: list -->
+      <ul class="flex flex-col">
+        {
+          lines.map((l, i) => (
+            <li
+              class="grid grid-cols-[40px_120px_1fr] items-baseline gap-4 border-t border-[var(--color-border)] py-6 md:gap-8 md:py-8"
+              data-reveal-child
+            >
+              <span
+                class="font-mono text-[11px] uppercase text-[var(--color-rose)]"
+                style="letter-spacing: 0.22em;"
+              >
+                0{i + 1}
+              </span>
+              <span
+                class="font-mono text-[11px] uppercase text-[var(--color-fg-tertiary)]"
+                style="letter-spacing: 0.22em;"
+              >
+                {l.label}
+              </span>
+              <span
+                class="text-[var(--color-fg-primary)]"
+                style="font-size: clamp(18px, 1.6vw, 22px); line-height: 1.45;"
+              >
+                {l.value}
+              </span>
+            </li>
+          ))
+        }
+        <li class="border-t border-[var(--color-border)]"></li>
+      </ul>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,107 @@
+---
+import Grainient from "./Grainient.astro";
+
+const lines = [
+  { word: "Software", italic: false },
+  { word: "is just", italic: true },
+  { word: "opinions,", italic: false },
+  { word: "encoded.", italic: false, accent: true },
+];
+
+const lines2 = [
+  { word: "I try", italic: false },
+  { word: "to encode", italic: true },
+  { word: "good", italic: false, accent: true },
+  { word: "ones.", italic: false },
+];
+---
+
+<section
+  id="manifesto"
+  class="relative hidden overflow-hidden md:block"
+  style="background: #C04970;"
+>
+  <!-- Impressionist ground: a warping, grainy rose gradient. Painterly broken
+       colour + drifting light. Kept in the rose family (soft → rose → deep) so
+       the dark type stays legible — unlike the Hero, this panel carries DARK
+       text, so colour3 is burgundy, never near-black. The solid bg above is the
+       no-WebGL / no-JS fallback; reduced-motion renders a single static frame. -->
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0"
+  >
+    <Grainient
+      class="h-full w-full"
+      color1="#D87A99"
+      color2="#C04970"
+      color3="#8C2B4A"
+      timeSpeed={0.12}
+      colorBalance={0.0}
+      contrast={1.2}
+      saturation={1.12}
+      grainAmount={0.11}
+      grainScale={2.4}
+      grainAnimated={false}
+      warpStrength={1.1}
+      warpFrequency={4.0}
+      warpAmplitude={85}
+      warpSpeed={1.6}
+      rotationAmount={300}
+      noiseScale={1.25}
+      blendSoftness={0.12}
+      zoom={1.1}
+    />
+  </div>
+
+  <!-- Paper grain effect -->
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0 opacity-[0.07] mix-blend-overlay"
+    style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22220%22 height=%22220%22><filter id=%22n%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22 numOctaves=%222%22/></filter><rect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22/></svg>');"
+  >
+  </div>
+
+  <div
+    class="relative mx-auto flex min-h-dvh max-w-[1400px] flex-col px-6 py-24 md:px-12"
+    data-reveal
+  >
+    <!-- The thesis owns the whole field — centred, monumental, nothing else
+         competing. The statement is strong enough to stand alone; the CTA lives
+         in Contact, the principles are implied. -->
+    <div class="flex flex-1 items-center justify-center">
+      <h2
+        data-fit="0.72"
+        class="fraunces w-full text-center font-light leading-[0.95] tracking-[-0.05em] text-[clamp(44px,8vw,136px)]"
+        style="color: #1A1D24;"
+      >
+        <span class="flex flex-wrap items-baseline justify-center gap-x-6 gap-y-1">
+          {
+            lines.map((l) => (
+              <span data-manifesto-word data-fit-line class={`whitespace-nowrap ${l.italic ? "fraunces-italic" : ""} ${l.accent ? "text-[#FBEFE7]" : ""}`}>
+                {l.word}
+              </span>
+            ))
+          }
+        </span>
+        <span class="mt-4 flex flex-wrap items-baseline justify-center gap-x-6 gap-y-1 md:mt-6">
+          {
+            lines2.map((l) => (
+              <span data-manifesto-word data-fit-line class={`whitespace-nowrap ${l.italic ? "fraunces-italic" : ""} ${l.accent ? "text-[#FBEFE7]" : ""}`}>
+                {l.word}
+              </span>
+            ))
+          }
+        </span>
+      </h2>
+    </div>
+
+    <!-- Colophon — the section's quiet signature at the base of the field. -->
+    <div
+      class="mx-auto font-mono text-[10px] uppercase md:text-[11px]"
+      style="color: rgba(20,23,28,0.6); letter-spacing: 0.32em;"
+      data-reveal-child
+    >
+      Manifesto · On craft · 2026
+    </div>
+  </div>
+</section>

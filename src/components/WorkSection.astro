@@ -1,0 +1,384 @@
+---
+import { FEATURED, PROJECTS } from "../data/projects";
+import FeaturedCase from "./FeaturedCase.astro";
+import Preview from "./previews/Preview.astro";
+
+// ── Masonry tiles ────────────────────────────────────────────
+// Each tile is either a real project preview or an image placeholder.
+// To add a real image later, swap a { kind: "image" } tile's render for:
+//   <img class="h-full w-full object-cover" src="/work/your-file.jpg" alt="…" />
+// (drop files into /public/work/). Add more tiles to any column freely.
+const columns = [
+  {
+    speed: "0.06",
+    offset: "",
+    items: [
+      { kind: "preview", p: PROJECTS[0], h: "h-[340px]" },
+      { kind: "image", id: "07", h: "h-[220px]" },
+      { kind: "preview", p: PROJECTS[2], h: "h-[280px]" },
+      { kind: "image", id: "08", h: "h-[300px]" },
+    ],
+  },
+  {
+    speed: "0.13",
+    offset: "md:mt-24",
+    items: [
+      { kind: "image", id: "09", h: "h-[300px]" },
+      { kind: "preview", p: PROJECTS[1], h: "h-[260px]" },
+      { kind: "image", id: "10", h: "h-[340px]" },
+      { kind: "preview", p: PROJECTS[4], h: "h-[240px]" },
+    ],
+  },
+  {
+    speed: "0.08",
+    offset: "md:mt-10",
+    items: [
+      { kind: "preview", p: PROJECTS[3], h: "h-[320px]" },
+      { kind: "image", id: "11", h: "h-[240px]" },
+      { kind: "preview", p: PROJECTS[5], h: "h-[280px]" },
+      { kind: "image", id: "12", h: "h-[320px]" },
+    ],
+  },
+];
+
+// Mobile "full shelf" — instead of a literal list, a few real previews recede
+// into the distance: smaller, fainter and more out of focus the deeper they go,
+// so the work reads as continuing beyond what fits. The front card is concrete;
+// the rest dissolve into "more". Non-featured projects, to add to the two case
+// studies shown above rather than repeat them.
+const receding = [
+  { p: PROJECTS[1], h: 248, w: 100, o: 1, blur: 0 }, // Design system CLI
+  { p: PROJECTS[2], h: 208, w: 84, o: 0.5, blur: 1.5 }, // pg-migrate-ts
+  { p: PROJECTS[4], h: 172, w: 70, o: 0.28, blur: 3 }, // Auth microservice
+];
+---
+
+<section id="work" class="relative">
+  <!-- ============================================================
+       FEATURED — the section is handed off, not laid out. The first
+       case owns the whole viewport; on scroll the second rises and
+       takes the entire section over (full-bleed sticky pin, no card
+       chrome). Mobile falls back to plain flow (see <style>).
+       ============================================================ -->
+  <div class="case-stack" data-stack>
+    {
+      FEATURED.map((c, i) => (
+        <div class="case-stack__layer" data-stack-item style={`z-index: ${i + 1};`}>
+          <div class="case-stack__inner" data-stack-panel>
+            <FeaturedCase caseStudy={c} reverse={i % 2 === 1} />
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- ============================================================
+       MASONRY — drifting wall with the statement at its center.
+       Wrapped in a full-bleed rose zone so the accent from the case
+       takeover above carries straight through the closing statement
+       (continuity), instead of cutting back to the dark base.
+       ============================================================ -->
+  <div class="masonry-zone relative">
+   <div class="masonry-zone__inner relative mx-auto max-w-[1600px] px-4 pt-12 pb-20 md:px-12 md:pt-16 md:pb-28">
+    <div
+      class="mb-10 flex flex-wrap items-end justify-between gap-4 border-t border-[var(--color-border)] pt-8 md:mb-14 md:pt-12"
+      data-reveal
+    >
+      <div class="eyebrow" data-reveal-child>The full shelf</div>
+      <span
+        class="font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)]"
+        style="letter-spacing: 0.22em;"
+        data-reveal-child
+      >
+        Selected fragments · 2021 — 2025
+      </span>
+    </div>
+
+    <div class="relative" data-reveal>
+      <!-- Drifting columns — desktop only. On mobile this would collapse into a
+           single literal list, so it is hidden in favour of the receding stack
+           below. -->
+      <div class="hidden md:flex md:flex-row md:items-start md:gap-6">
+        {
+          columns.map((col) => (
+            <div
+              class={`flex flex-col gap-5 md:flex-1 md:gap-6 ${col.offset}`}
+              data-parallax
+              data-parallax-speed={col.speed}
+            >
+              {col.items.map((t) => {
+                if (t.kind === "preview" && t.p) {
+                  const p = t.p;
+                  const href = p.link ? `https://${p.link}` : null;
+                  const card = (
+                    <div
+                      class={`masonry-card group relative ${t.h} w-full overflow-hidden rounded-[3px] border border-[var(--color-border)] bg-[#161922] transition-[border-color,box-shadow] duration-500`}
+                    >
+                      <div
+                        class="absolute inset-0 origin-center"
+                        style="transform: scale(1.5);"
+                      >
+                        <Preview kind={p.previewKey} />
+                      </div>
+                      <div class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-[rgba(0,0,0,0.88)] to-transparent px-5 pb-4 pt-16">
+                        <div>
+                          <div
+                            class="fraunces text-[16px] text-[var(--color-fg-primary)]"
+                            style="letter-spacing: -0.02em;"
+                          >
+                            {p.title}
+                          </div>
+                          <div
+                            class="mt-1 font-mono text-[9px] uppercase text-[var(--color-fg-tertiary)]"
+                            style="letter-spacing: 0.22em;"
+                          >
+                            {p.stack.slice(0, 3).join(" · ")}
+                          </div>
+                        </div>
+                        <span
+                          class="font-mono text-[9px] uppercase text-[var(--color-rose)]"
+                          style="letter-spacing: 0.22em;"
+                        >
+                          {href ? "↗" : p.year}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                  return href ? (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-reveal-child
+                      data-cursor="View"
+                      class="block"
+                      aria-label={`View ${p.title}`}
+                    >
+                      {card}
+                    </a>
+                  ) : (
+                    <div data-reveal-child class="block">
+                      {card}
+                    </div>
+                  );
+                }
+
+                /* Image placeholder — replace inner with <img> later */
+                return (
+                  <div
+                    data-reveal-child
+                    class={`masonry-card group relative ${t.h} w-full overflow-hidden rounded-[3px] border border-dashed border-[var(--color-border)] bg-[var(--color-bg-elevated)]`}
+                  >
+                    <div class="flex h-full w-full flex-col items-center justify-center gap-2 text-[var(--color-fg-quaternary)]">
+                      <span class="fraunces-italic text-[28px] leading-none">
+                        {t.id}
+                      </span>
+                      <span
+                        class="font-mono text-[9px] uppercase"
+                        style="letter-spacing: 0.22em;"
+                      >
+                        Image
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- Centered statement, woven into the wall (desktop) -->
+      <div
+        class="pointer-events-none absolute inset-0 hidden items-center justify-center md:flex"
+        style="background: radial-gradient(ellipse 62% 46% at center, rgba(26,29,36,0.92) 0%, rgba(26,29,36,0.72) 34%, rgba(26,29,36,0) 64%);"
+        data-reveal-child
+      >
+        <p
+          class="fraunces text-center font-light leading-[0.9] tracking-[-0.04em] text-[var(--color-fg-primary)]"
+          style="font-size: clamp(48px, 7vw, 132px);"
+        >
+          Far more than{" "}
+          <em class="fraunces-italic text-[var(--color-rose)]">fits here.</em>
+        </p>
+      </div>
+    </div>
+
+    <!-- Mobile-only "full shelf" — a few real previews receding into the
+         distance: each smaller, fainter and more out of focus than the last,
+         so the work reads as continuing past what fits, not as a list. One
+         object with depth. The deeper cards are decorative (aria-hidden);
+         only the front card carries a title. -->
+    <div class="work-recede">
+      {
+        receding.map((r, i) => (
+          <div
+            class="work-recede__card"
+            aria-hidden={i > 0 ? "true" : undefined}
+            style={`width: ${r.w}%; height: ${r.h}px; opacity: ${r.o}; filter: blur(${r.blur}px); z-index: ${receding.length - i};`}
+          >
+            <div class="relative h-full w-full overflow-hidden rounded-[3px] border border-[var(--color-border)] bg-[#161922]">
+              <div class="absolute inset-0 origin-center" style="transform: scale(1.5);">
+                <Preview kind={r.p.previewKey} />
+              </div>
+              {i === 0 && (
+                <div class="absolute inset-x-0 bottom-0 flex items-end bg-gradient-to-t from-[rgba(0,0,0,0.88)] to-transparent px-5 pb-4 pt-16">
+                  <div
+                    class="fraunces text-[16px] text-[var(--color-fg-primary)]"
+                    style="letter-spacing: -0.02em;"
+                  >
+                    {r.p.title}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Centered statement (mobile) -->
+    <div class="mt-12 text-center md:hidden" data-reveal-child>
+      <p
+        class="fraunces font-light leading-[0.92] tracking-[-0.04em] text-[var(--color-fg-primary)]"
+        style="font-size: clamp(40px, 12vw, 72px);"
+      >
+        Far more than{" "}
+        <em class="fraunces-italic text-[var(--color-rose)]">fits here.</em>
+      </p>
+    </div>
+   </div>
+  </div>
+</section>
+
+<style>
+  /* ── Featured handoff — full-bleed sticky layers ───────────────
+     Each case is a full-viewport stage pinned to the top. In flow it
+     occupies 100vh, so the two together create the scroll length that
+     lets the second layer rise and take the whole section over. The
+     <div data-stack-item> is the sticky element; the inner carries the
+     JS transform, so pinning and the recede never share `transform`. */
+  .case-stack {
+    position: relative;
+  }
+  .case-stack__layer {
+    position: sticky;
+    top: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    /* opaque, full-width fill so the rising layer fully replaces the
+       one beneath — this is what makes it read as a section takeover.
+       Default = dark blue, which is now the ENTERING (takeover) layer. */
+    background: var(--color-bg-base);
+  }
+  /* SWAPPED — the base case (first) is the rose one now. It sits, it
+     doesn't crest, so no rounded corners; just the accent fill plus the
+     warm-on-rose token re-scope (the card's text is built for a dark bg).
+     NOTE: the accent `background` stays on the LAYER and the token
+     re-scope on the INNER. If both lived on the same element,
+     `background: var(--color-rose)` would resolve against the local
+     `--color-rose` override and the fill would turn warm/white. */
+  /* Transparent so the shared `.rose-field` Grainient ground (which also backs
+     the "Six projects." divider above) shows straight through — one continuous
+     painterly rose field, no seam between divider and first case. */
+  .case-stack__layer:first-child {
+    background: transparent;
+  }
+  .case-stack__layer:first-child .case-stack__inner {
+    --color-fg-primary: var(--color-rose-warm);
+    --color-fg-secondary: var(--color-rose-tint);
+    --color-fg-tertiary: rgba(251, 239, 231, 0.72);
+    --color-fg-quaternary: rgba(251, 239, 231, 0.6);
+    --color-rose: var(--color-rose-warm);
+    --color-border: rgba(251, 239, 231, 0.28);
+  }
+  /* The entering layer keeps the rounded-top crest, now in dark blue.
+     It uses the default :root tokens (light text on dark) — no re-scope. */
+  .case-stack__layer:not(:first-child) {
+    border-top-left-radius: clamp(20px, 3vw, 40px);
+    border-top-right-radius: clamp(20px, 3vw, 40px);
+    overflow: hidden;
+  }
+  .case-stack__inner {
+    position: relative;
+    z-index: 1; /* content sits above the rose-field shared ground behind it */
+    width: 100%;
+    max-width: 1600px;
+    margin-inline: auto;
+    padding: 5rem 1rem;
+    transform-origin: center top;
+    will-change: transform, opacity;
+  }
+  @media (min-width: 768px) {
+    .case-stack__inner {
+      padding: 8rem 3rem;
+    }
+  }
+  /* Mobile: a stage taller than the viewport pins badly, so drop the
+     pin and let the two cases flow one after another. */
+  @media (max-width: 767px) {
+    .case-stack__layer {
+      position: static;
+      min-height: 0;
+      display: block;
+    }
+    .case-stack__inner {
+      padding: 2.5rem 1rem;
+    }
+  }
+
+  /* ── Closing statement zone — rose continuity ─────────────────
+     The full shelf + "Far more than fits here" sit on the same accent
+     as the case takeover above, so the rose reads as one continuous
+     field. Dark-tuned tokens are re-scoped to a warm-on-rose palette;
+     the project thumbnails keep their own dark frames on purpose
+     (dark plates pinned to an accent board). */
+  /* Continuity with the entering case (now dark blue): the closing
+     wall sits on the same dark base, so the default :root tokens apply
+     unchanged — no re-scope needed. The full-bleed dark fill simply
+     carries the takeover colour straight through the statement. */
+  .masonry-zone {
+    background: var(--color-bg-base);
+  }
+
+  .masonry-card {
+    transition:
+      border-color 500ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .masonry-card:hover {
+    border-color: var(--color-rose);
+    box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.55);
+  }
+
+  /* ── Mobile "full shelf" — receding stack ─────────────────────────────
+     On small screens the masonry would collapse into a literal vertical list.
+     Instead a few real previews recede into the distance: width, opacity and
+     focus all fall off with depth, and a slight overlap fuses them into one
+     object whose tail dissolves into "far more than fits here". Static, so it
+     needs no reduced-motion handling. Desktop is unaffected. */
+  .work-recede {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  /* Desktop shows the drifting masonry columns instead. Hiding here (not via
+     a Tailwind `md:hidden` utility) because Astro scopes this rule with a
+     [data-astro-cid] attribute, giving it higher specificity than the
+     utility — so the breakpoint must live alongside the layout it overrides. */
+  @media (min-width: 768px) {
+    .work-recede {
+      display: none;
+    }
+  }
+  .work-recede__card {
+    position: relative;
+    margin-top: -2rem; /* slight overlap fuses the cards into one receding object */
+    will-change: transform;
+  }
+  .work-recede__card:first-child {
+    margin-top: 0;
+  }
+</style>

@@ -1,0 +1,102 @@
+---
+// Contact — minimal, centered close, kept inside the dark system.
+// A single vertical axis: eyebrow → serif statement → the email as the hero
+// CTA → secondary channels inline → availability. No burgundy zone — the dark
+// is the whole page.
+
+const email = {
+  value: "hello@victorolave.dev",
+  href: "mailto:hello@victorolave.dev",
+};
+
+const channels = [
+  { label: "GitHub", href: "https://github.com/volave", cursor: "View", disabled: false },
+  { label: "LinkedIn", href: "https://linkedin.com/in/victorolave", cursor: "Connect", disabled: false },
+  { label: "Calendar", href: "#", cursor: "Book", disabled: true },
+];
+
+---
+
+<section
+  id="contact"
+  class="relative overflow-hidden border-t border-[var(--color-border)] bg-[var(--color-bg-base)]"
+>
+  <div
+    class="relative mx-auto flex max-w-[1600px] flex-col items-center px-4 py-24 text-center md:px-12 md:py-40"
+    data-reveal
+  >
+    <!-- Eyebrow -->
+    <span class="eyebrow" data-reveal-child>Get in touch</span>
+
+    <!-- Statement -->
+    <h2
+      class="fraunces mt-8 font-light leading-[0.95] tracking-[-0.04em] text-[var(--color-fg-primary)]"
+      style="font-size: clamp(64px, 12vw, 200px);"
+      data-reveal-child
+    >
+      Let&rsquo;s <em class="fraunces-italic text-[var(--color-rose)]">talk</em>.
+    </h2>
+
+    <!-- Email — the hero CTA -->
+    <a
+      href={email.href}
+      data-cursor="Send"
+      data-magnetic="0.4"
+      class="group mt-12 inline-flex items-center gap-3 font-light text-[var(--color-fg-primary)] transition-colors duration-200 hover:text-[var(--color-rose)]"
+      style="font-size: clamp(28px, 5vw, 64px); letter-spacing: -0.02em;"
+      data-reveal-child
+    >
+      <span class="fraunces">{email.value}</span>
+      <span
+        class="text-[var(--color-rose)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
+        aria-hidden="true">↗</span
+      >
+    </a>
+
+    <!-- Secondary channels -->
+    <div
+      class="mt-12 flex flex-wrap items-center justify-center gap-x-9 gap-y-4"
+      data-reveal-child
+    >
+      {
+        channels.map((c) =>
+          c.disabled ? (
+            <span
+              class="inline-flex items-center gap-2 py-2.5 font-mono text-[11px] uppercase text-[var(--color-fg-tertiary)] cursor-default"
+              style="letter-spacing: 0.22em;"
+              aria-label="Calendar booking — coming soon"
+            >
+              {c.label}
+              <span class="rounded-sm bg-[var(--color-bg-surface)] px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-[var(--color-fg-tertiary)]">
+                Soon
+              </span>
+            </span>
+          ) : (
+            <a
+              href={c.href}
+              target={c.href.startsWith("http") ? "_blank" : undefined}
+              rel={c.href.startsWith("http") ? "noopener noreferrer" : undefined}
+              data-cursor={c.cursor}
+              class="group inline-flex items-center gap-2 py-2.5 font-mono text-[11px] uppercase text-[var(--color-fg-secondary)] transition-colors duration-200 hover:text-[var(--color-rose)]"
+              style="letter-spacing: 0.22em;"
+            >
+              {c.label}
+              <span class="text-[var(--color-fg-tertiary)] transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-[var(--color-rose)]">
+                ↗
+              </span>
+            </a>
+          )
+        )
+      }
+    </div>
+
+    <!-- Availability -->
+    <p
+      class="mt-10 font-mono text-[11px] uppercase text-[var(--color-fg-tertiary)]"
+      style="letter-spacing: 0.22em;"
+      data-reveal-child
+    >
+      Available Q3 2026 onwards
+    </p>
+  </div>
+</section>

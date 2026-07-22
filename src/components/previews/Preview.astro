@@ -1,0 +1,22 @@
+---
+import type { PreviewKey } from "../../data/projects";
+import ApiGateway from "./ApiGateway.astro";
+import DesignCli from "./DesignCli.astro";
+import PgMigrate from "./PgMigrate.astro";
+import Analytics from "./Analytics.astro";
+import Auth from "./Auth.astro";
+import Ecommerce from "./Ecommerce.astro";
+
+interface Props {
+  kind: PreviewKey;
+}
+
+const { kind } = Astro.props;
+---
+
+{kind === "api-gateway" && <ApiGateway />}
+{kind === "design-cli" && <DesignCli />}
+{kind === "pg-migrate" && <PgMigrate />}
+{kind === "analytics" && <Analytics />}
+{kind === "auth" && <Auth />}
+{kind === "ecommerce" && <Ecommerce />}

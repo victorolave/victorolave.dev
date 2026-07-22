@@ -1,0 +1,192 @@
+---
+// Skills — two columns on pure-deep black:
+//  · left  — label, heavy UPPERCASE headline (split-char), rule, CTA, bouncing arrow
+//  · right — vertical accordion of technical categories (CSS grid-rows animation,
+//            progressive-enhanced: open without JS, collapsible with JS)
+
+const categories = [
+  {
+    name: "Frontend",
+    items: ["React", "TypeScript", "Next.js", "Astro", "Tailwind CSS", "Vue"],
+  },
+  {
+    name: "Animation & 3D",
+    items: ["Motion One", "GSAP", "Three.js", "WebGL", "Lenis", "Canvas"],
+  },
+  {
+    name: "Backend",
+    items: ["Node.js", "NestJS", "Express", "REST", "GraphQL", "WebSockets"],
+  },
+  {
+    name: "Databases",
+    items: ["PostgreSQL", "MongoDB", "Redis", "Prisma", "Drizzle"],
+  },
+  {
+    name: "DevOps & Tools",
+    items: ["Docker", "GitHub Actions", "Vercel", "Railway", "AWS", "Git"],
+  },
+  {
+    name: "System & Security",
+    items: ["OAuth / JWT", "Hexagonal Arch.", "Testing", "CI/CD", "Observability"],
+  },
+  {
+    name: "Design",
+    items: ["Figma", "Design Systems", "Atomic Design", "Accessibility"],
+  },
+];
+---
+
+<section
+  id="skills"
+  class="relative border-t border-[var(--color-border)] bg-[var(--color-bg-deep)]"
+>
+  <div
+    class="mx-auto grid max-w-[1600px] grid-cols-1 gap-12 px-4 pt-12 pb-20 md:grid-cols-2 md:gap-20 md:px-12 md:pt-16 md:pb-32"
+  >
+    <!-- Left column -->
+    <div class="flex flex-col" data-reveal>
+      <span class="eyebrow" data-reveal-child>Skills</span>
+
+      <h3
+        data-reveal-child
+        class="mt-7 fraunces font-light leading-[1] tracking-[-0.04em] text-[var(--color-fg-primary)]"
+        style="font-size: clamp(34px, 4.4vw, 64px);"
+      >
+        I build software that <em
+          class="fraunces-italic text-[var(--color-rose)]">scales</em
+        > and <em class="fraunces-italic text-[var(--color-rose)]">endures</em>.
+      </h3>
+
+      <div
+        class="mt-9 h-px w-full bg-[var(--color-border)]"
+        data-reveal-child
+        aria-hidden="true"
+      >
+      </div>
+
+      <div class="mt-9 flex items-center justify-between" data-reveal-child>
+        <a
+          href="#contact"
+          data-cursor="Say hi"
+          class="group inline-flex items-center gap-3 py-2.5 -my-2.5 font-mono text-[12px] font-medium uppercase tracking-[0.2em] text-[var(--color-fg-primary)] transition-colors duration-200 hover:text-[var(--color-rose)]"
+        >
+          Contact me
+          <span class="fraunces-italic text-[var(--color-rose)]">✦</span>
+        </a>
+
+        <!-- Bouncing decorative arrow -->
+        <svg
+          class="skills-arrow text-[var(--color-rose)]"
+          width="52"
+          height="52"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 4v15" />
+          <path d="m5 13 7 7 7-7" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Right column: accordion -->
+    <div data-acc-root>
+      {
+        categories.map((cat, i) => (
+          <div
+            class="acc-item border-b border-[var(--color-border)]"
+            data-acc-item
+            data-acc-default={i === 0 ? "open" : undefined}
+          >
+            <button
+              type="button"
+              class="acc-trigger flex w-full items-center justify-between gap-6 py-5 text-left"
+              data-acc-trigger
+              aria-expanded="false"
+            >
+              <span
+                class="fraunces font-light leading-none text-[var(--color-fg-primary)]"
+                style="font-size: clamp(21px, 2.6vw, 32px);"
+              >
+                {cat.name}
+              </span>
+              <span
+                class="acc-icon font-mono text-[20px] leading-none text-[var(--color-rose)]"
+                aria-hidden="true"
+              >
+                +
+              </span>
+            </button>
+            <div class="acc-panel">
+              <div class="acc-panel-inner">
+                <ul class="flex flex-wrap gap-x-3 gap-y-2 pb-6">
+                  {cat.items.map((item) => (
+                    <li class="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-fg-secondary)]">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Accordion — animate with grid-template-rows (no JS height measuring). */
+  .acc-panel {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 420ms var(--ease-out-expo);
+  }
+  .acc-panel-inner {
+    overflow: hidden;
+  }
+  /* With JS: collapse by default, open class expands. Without JS: stays open. */
+  html.js .acc-panel {
+    grid-template-rows: 0fr;
+  }
+  html.js .acc-item.is-open .acc-panel {
+    grid-template-rows: 1fr;
+  }
+  .acc-icon {
+    display: inline-block;
+    transition: transform 320ms var(--ease-out-expo);
+  }
+  .acc-item.is-open .acc-icon {
+    transform: rotate(45deg);
+  }
+  .acc-trigger:hover .fraunces {
+    color: var(--color-rose);
+  }
+
+  /* Bouncing arrow */
+  .skills-arrow {
+    animation: skills-bounce 1.8s var(--ease-in-out) infinite;
+  }
+  @keyframes skills-bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(8px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .acc-panel {
+      transition: none;
+    }
+    .skills-arrow {
+      animation: none;
+    }
+  }
+</style>

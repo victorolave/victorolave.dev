@@ -1,0 +1,150 @@
+---
+import type { FeaturedCase } from "../data/projects";
+import Preview from "./previews/Preview.astro";
+
+interface Props {
+  caseStudy: FeaturedCase;
+  reverse?: boolean;
+}
+
+const { caseStudy, reverse = false } = Astro.props;
+const c = caseStudy;
+---
+
+<article
+  class="featured-case grid items-center gap-12 md:gap-20 lg:grid-cols-2"
+  style={reverse ? "direction: rtl;" : ""}
+>
+  <!-- Preview — non-interactive display (no real case page yet) -->
+  <div
+    class="featured-case__media relative h-[280px] overflow-hidden rounded-[4px] border border-[var(--color-border)] bg-[#161922] shadow-[0_12px_24px_rgba(0,0,0,0.25)] md:h-[420px]"
+    style="direction: ltr; will-change: transform;"
+    aria-hidden="true"
+  >
+    <div
+      data-parallax
+      data-parallax-speed="0.08"
+      class="h-full w-full will-change-transform"
+    >
+      <div class="featured-case__preview h-full w-full origin-top-left">
+        <Preview kind={c.previewKey} />
+      </div>
+    </div>
+    <!-- Ghost index numeral — editorial chapter marker -->
+    <span
+      class="featured-case__index fraunces-italic pointer-events-none absolute bottom-2 right-4 leading-none"
+    >
+      {c.index}
+    </span>
+  </div>
+
+  <div style="direction: ltr;">
+    <!-- Meta row: case kicker + year / role -->
+    <div
+      class="mb-5 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-[var(--color-border)] pb-3"
+    >
+      <span class="sheet-mark">CASE · {c.kicker}</span>
+      <span
+        class="font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)]"
+        style="letter-spacing: 0.22em;"
+      >
+        {c.year} · {c.role}
+      </span>
+    </div>
+
+    <h3
+      class="fraunces mb-5 font-light leading-[1.05] tracking-[-0.04em] text-[var(--color-fg-primary)]"
+      style="font-size: clamp(30px, 4.2vw, 44px);"
+    >
+      {c.title}<em class="fraunces-italic text-[var(--color-rose)]">.</em>
+    </h3>
+
+    <p
+      class="mb-6 max-w-[480px] text-[16px] leading-[1.7] text-[var(--color-fg-secondary)]"
+    >
+      {c.desc}
+    </p>
+
+    <!-- Highlights — what the work actually did -->
+    <ul class="mb-7 flex max-w-[480px] flex-col gap-2.5">
+      {
+        c.highlights.map((h) => (
+          <li class="flex items-start gap-3 text-[14px] leading-[1.55] text-[var(--color-fg-secondary)]">
+            <span class="mt-[7px] h-[5px] w-[5px] shrink-0 rounded-full bg-[var(--color-rose)]" />
+            {h}
+          </li>
+        ))
+      }
+    </ul>
+
+    <!-- Metrics — tabular figures so they don't shift -->
+    <div
+      class="mb-7 grid max-w-[480px] grid-cols-3 gap-6 border-t border-[var(--color-border)] pt-5"
+    >
+      {
+        c.metrics.map((m) => (
+          <div>
+            <div
+              class="fraunces-italic font-light text-[var(--color-fg-primary)]"
+              style="font-size: 30px; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums;"
+            >
+              {m.value}
+            </div>
+            <div
+              class="mt-[6px] text-[10px] uppercase text-[var(--color-fg-tertiary)]"
+              style="letter-spacing: 0.22em;"
+            >
+              {m.label}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Stack tags -->
+    <div class="mb-7 flex flex-wrap gap-2">
+      {
+        c.tags.map((t) => (
+          <span
+            class="rounded-full border border-[var(--color-border)] px-3 py-1 font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)]"
+            style="letter-spacing: 0.14em;"
+          >
+            {t}
+          </span>
+        ))
+      }
+    </div>
+
+    <!-- Case study page not yet available — honest, styled affordance -->
+    <span
+      class="inline-flex items-center gap-[10px] text-[13px] text-[var(--color-fg-tertiary)]"
+    >
+      <span class="h-[6px] w-[6px] rounded-full bg-[var(--color-rose)]"></span>
+      Case study — write-up in progress
+    </span>
+  </div>
+</article>
+
+<style>
+  .featured-case__index {
+    font-size: clamp(56px, 7vw, 104px);
+    color: var(--color-rose);
+    opacity: 0.16;
+  }
+  /* Base zoom lives in CSS (not inline) so the hover can override it. */
+  .featured-case__preview {
+    transform: scale(1.4);
+    transition: transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .featured-case__media:hover .featured-case__preview {
+    transform: scale(1.46);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .featured-case__preview {
+      transition: none;
+    }
+    .featured-case__media:hover .featured-case__preview {
+      transform: scale(1.4);
+    }
+  }
+</style>

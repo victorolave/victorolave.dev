@@ -1,0 +1,66 @@
+---
+const cells = [
+  { label: "Live", value: 842 },
+  { label: "EU", value: 921 },
+  { label: "US", value: 487 },
+  { label: "APAC", value: 231 },
+];
+---
+
+<div class="relative h-full w-full overflow-hidden bg-[#161922] p-[14px]">
+  <div class="mb-[10px] flex justify-between">
+    <div>
+      <div
+        class="fraunces-italic text-[var(--color-fg-primary)]"
+        style="font-size: 18px; line-height: 1;"
+      >
+        2,481
+      </div>
+      <div
+        class="mt-[3px] text-[7px] uppercase text-[var(--color-fg-tertiary)]"
+        style="letter-spacing: 0.18em;"
+      >
+        active now
+      </div>
+    </div>
+    <div class="text-[8px] text-[#6FA887]">+12.4% ↗</div>
+  </div>
+  <svg width="100%" height="60" viewBox="0 0 280 60" class="block">
+    <defs>
+      <linearGradient id="cFill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#C04970" stop-opacity="0.3"></stop>
+        <stop offset="100%" stop-color="#C04970" stop-opacity="0"></stop>
+      </linearGradient>
+    </defs>
+    <path
+      d="M0 50 L20 42 L40 45 L60 30 L80 35 L100 22 L120 28 L140 18 L160 24 L180 12 L200 20 L220 8 L240 14 L260 6 L280 10 L280 60 L0 60 Z"
+      fill="url(#cFill)"></path>
+    <path
+      d="M0 50 L20 42 L40 45 L60 30 L80 35 L100 22 L120 28 L140 18 L160 24 L180 12 L200 20 L220 8 L240 14 L260 6 L280 10"
+      stroke="#C04970"
+      stroke-width="1.2"
+      fill="none"></path>
+  </svg>
+  <div class="mt-3 flex gap-[6px]">
+    {
+      cells.map((c, i) => (
+        <div
+          class="flex-1 rounded-[2px] border border-[var(--color-border)] px-2 py-[6px]"
+          style="font-size: 7px;"
+        >
+          <div
+            class="uppercase text-[var(--color-fg-tertiary)]"
+            style="letter-spacing: 0.12em;"
+          >
+            {c.label}
+          </div>
+          <div
+            class={`mt-[2px] text-[12px] text-[var(--color-fg-primary)] ${i === 0 ? "fraunces-italic" : "fraunces"}`}
+          >
+            {c.value}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</div>

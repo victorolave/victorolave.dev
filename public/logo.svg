@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" fill="none">
+  
+  <text x="6" y="56" font-family="Fraunces, Georgia, serif" font-size="56" font-weight="300" font-style="italic" fill="#E8E4DD" letter-spacing="-3">V</text>
+  <circle cx="50" cy="50" r="3" fill="#C04970"></circle>
+  <text x="58" y="56" font-family="Fraunces, Georgia, serif" font-size="56" font-weight="300" fill="#E8E4DD" letter-spacing="-2">O</text>
+  
+  <text x="120" y="34" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#E8E4DD" letter-spacing="0">Victor Olave</text>
+  <text x="120" y="52" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA0AC" letter-spacing="2">SENIOR FULLSTACK DEVELOPER</text>
+  <line x1="120" y1="40" x2="300" y2="40" stroke="#3A4051" stroke-width="0.5"></line>
+</svg>

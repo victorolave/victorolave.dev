@@ -1,0 +1,113 @@
+---
+// Preloader — word-cycle narrative instead of a raw 0→100 counter.
+// Cycles the manifesto words (Design / Detail / Restraint) in serif italic,
+// then assembles "Victor Olave." letter by letter and exits with a
+// clip-path curtain. Driven from src/scripts/motion.ts → setupLoader().
+const words = ["Design", "Detail", "Restraint"];
+---
+
+<div
+  id="loader"
+  class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[var(--color-bg-base)]"
+  aria-hidden="true"
+>
+  <!-- Corner ticks for blueprint aesthetic -->
+  <div
+    class="pointer-events-none absolute left-6 top-6 h-3 w-3 border-l border-t border-[var(--color-rose)] md:left-12 md:top-12"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute right-6 top-6 h-3 w-3 border-r border-t border-[var(--color-rose)] md:right-12 md:top-12"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute bottom-6 left-6 h-3 w-3 border-b border-l border-[var(--color-rose)] md:bottom-12 md:left-12"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute bottom-6 right-6 h-3 w-3 border-b border-r border-[var(--color-rose)] md:bottom-12 md:right-12"
+  >
+  </div>
+
+  <!-- Top labels -->
+  <div
+    class="absolute left-6 top-12 font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)] md:left-12 md:top-16"
+    style="letter-spacing: 0.22em;"
+  >
+    Loading folio
+  </div>
+  <div
+    class="absolute right-6 top-12 font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)] md:right-12 md:top-16"
+    style="letter-spacing: 0.22em;"
+  >
+    2026 — REV. C
+  </div>
+
+  <!-- Word stage — grid stack so every line occupies the same cell,
+       overflow-hidden acts as the reveal mask -->
+  <div
+    class="loader-stage grid w-full place-items-center overflow-hidden px-4"
+    style="height: clamp(80px, 14vw, 190px);"
+  >
+    {
+      words.map((w) => (
+        <span
+          data-loader-word
+          class="fraunces-italic col-start-1 row-start-1 whitespace-nowrap font-light leading-none text-[var(--color-fg-primary)]"
+          style="font-size: clamp(44px, 8.5vw, 128px); letter-spacing: -0.04em; transform: translateY(130%); opacity: 0;"
+        >
+          {w}
+        </span>
+      ))
+    }
+    <span
+      data-loader-name
+      class="fraunces col-start-1 row-start-1 whitespace-nowrap font-light leading-none text-[var(--color-fg-primary)]"
+      style="font-size: clamp(44px, 8.5vw, 128px); letter-spacing: -0.045em; opacity: 0;"
+      >Victor Olave<span class="text-[var(--color-rose)]">.</span></span
+    >
+  </div>
+
+  <!-- Progress hairline — quiet affordance, no counter -->
+  <div
+    class="mt-10 h-px w-[min(360px,70vw)] overflow-hidden bg-[var(--color-border)]"
+  >
+    <div
+      id="loader-bar"
+      class="h-full w-full origin-left bg-[var(--color-rose)]"
+      style="transform: scaleX(0);"
+    >
+    </div>
+  </div>
+
+  <!-- Bottom tagline -->
+  <div
+    class="absolute bottom-12 left-1/2 -translate-x-1/2 text-center md:bottom-16"
+  >
+    <div
+      class="font-mono text-[10px] uppercase text-[var(--color-fg-quaternary)]"
+      style="letter-spacing: 0.22em;"
+    >
+      Senior Fullstack — Envigado, Colombia
+    </div>
+  </div>
+
+  <!-- Exit layer — full-height rose panel that sweeps bottom→top across
+       the screen while the dark base clips away behind its trailing edge -->
+  <div
+    data-loader-veil
+    class="pointer-events-none absolute inset-0 z-20 bg-[var(--color-rose)]"
+    style="transform: translateY(101%);"
+    aria-hidden="true"
+  >
+  </div>
+</div>
+
+<style>
+  body.loader-active {
+    overflow: hidden;
+  }
+  html.loaded #loader {
+    pointer-events: none;
+  }
+</style>

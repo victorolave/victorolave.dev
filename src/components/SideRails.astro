@@ -1,0 +1,73 @@
+---
+// Editorial side rails (desktop only):
+//  · left  — a fixed section counter "(0X)" in serif, vertically centered
+//  · right — a vertical "you are here" section nav with a growing tick
+// Both driven by setupSideRails() in src/scripts/motion.ts.
+
+const sections = [
+  { id: "process", label: "Process" },
+  { id: "work", label: "Work" },
+  { id: "about", label: "About" },
+  { id: "skills", label: "Skills" },
+  { id: "contact", label: "Contact" },
+];
+const total = String(sections.length).padStart(2, "0");
+---
+
+<!-- Left: section counter -->
+<div
+  data-side-rail
+  class="side-rail pointer-events-none fixed left-4 top-1/2 z-40 hidden -translate-y-1/2 transition-opacity duration-500 md:left-6 lg:block"
+  aria-hidden="true"
+>
+  <div
+    class="fraunces font-light leading-none text-[var(--color-fg-primary)]"
+    style="font-size: 38px; letter-spacing: -0.04em;"
+  >
+    (<span data-rail-counter class="tabular-nums">01</span>)
+  </div>
+  <div
+    class="mt-2 font-mono text-[10px] tracking-[0.22em] text-[var(--color-fg-quaternary)]"
+  >
+    / {total}
+  </div>
+</div>
+
+<!-- Right: section navigation -->
+<nav
+  data-side-rail
+  class="side-rail fixed right-4 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-end gap-3.5 transition-opacity duration-500 md:right-6 lg:flex"
+  aria-label="Section navigation"
+>
+  {
+    sections.map((s, i) => (
+      <a
+        href={`#${s.id}`}
+        data-rail-link={s.id}
+        data-rail-index={i}
+        class="rail-link group flex items-center gap-2.5 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-fg-tertiary)] transition-colors duration-300 hover:text-[var(--color-fg-primary)]"
+      >
+        <span class="rail-label opacity-0 transition-opacity duration-300">
+          {s.label}
+        </span>
+        <span class="rail-tick h-px w-5 bg-current transition-[width] duration-300" />
+      </a>
+    ))
+  }
+</nav>
+
+<style>
+  .rail-link.is-active {
+    color: var(--color-rose);
+  }
+  .rail-link.is-active .rail-tick {
+    width: 2rem;
+  }
+  .rail-link:hover .rail-label,
+  .rail-link.is-active .rail-label {
+    opacity: 1;
+  }
+  .rail-link.is-active .rail-label {
+    color: var(--color-fg-primary);
+  }
+</style>
