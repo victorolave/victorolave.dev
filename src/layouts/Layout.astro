@@ -7,16 +7,80 @@ interface Props {
 }
 
 const {
-  title = "Victor Olave · Senior Fullstack Developer",
-  description = "Nine years building the systems behind useful products with React, TypeScript and Node.js, now focused on AI-powered product engineering: LLMs, agents with MCP, and RAG.",
+  // Role and place up front: the title is the strongest on-page signal for
+  // "developer in Medellín" searches. Google truncates by pixel width (~600px),
+  // which this fits; keep additions short.
+  title = "Victor Olave · Senior Fullstack Developer · Medellín, Colombia",
+  // ≤155 characters, or Google truncates it in results.
+  description = "Senior fullstack developer in Envigado, Medellín area, Colombia. Nine years of React, TypeScript and Node.js, now building AI products: LLMs, MCP, RAG.",
 } = Astro.props;
 
 // Absolute URLs for og:/twitter: — relative paths are ignored by every social
-// crawler. Astro.site comes from `site` in astro.config.mjs; without it the
-// tags fall back to the deployed origin at request time.
+// crawler. Astro.site comes from `site` in astro.config.mjs; the fallback only
+// matters in a build that has lost it, and would bake in the dev origin.
 const origin = Astro.site ?? new URL(Astro.url.origin);
 const canonical = new URL(Astro.url.pathname, origin).href;
 const ogImage = new URL("/og-image.jpg", origin).href;
+const home = new URL("/", origin).href;
+
+// Structured data: who this page is about, where he works and what he knows.
+// Every value is backed by the page or the CV — do not add claims here that the
+// visible content does not make. `areaServed` is not a Person property, so the
+// Medellín area is expressed through the occupation's location instead.
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ProfilePage",
+      "@id": `${home}#profile`,
+      url: canonical,
+      name: title,
+      inLanguage: "en",
+      mainEntity: { "@id": `${home}#person` },
+    },
+    {
+      "@type": "Person",
+      "@id": `${home}#person`,
+      name: "Victor Olave",
+      url: home,
+      jobTitle: "Senior Fullstack Developer",
+      description,
+      email: "mailto:victorolave1131@gmail.com",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Envigado",
+        addressRegion: "Antioquia",
+        addressCountry: "CO",
+      },
+      hasOccupation: {
+        "@type": "Occupation",
+        name: "Senior Fullstack Developer",
+        occupationLocation: [
+          { "@type": "City", name: "Medellín" },
+          { "@type": "City", name: "Envigado" },
+        ],
+      },
+      knowsAbout: [
+        "React",
+        "TypeScript",
+        "Next.js",
+        "Node.js",
+        "NestJS",
+        "PostgreSQL",
+        "LLM integration",
+        "AI agents",
+        "Model Context Protocol",
+        "Retrieval-augmented generation",
+      ],
+      knowsLanguage: ["es", "en"],
+      alumniOf: {
+        "@type": "CollegeOrUniversity",
+        name: "Corporación Universitaria Comfacauca",
+      },
+      sameAs: ["https://github.com/victorolave", "https://www.linkedin.com/in/victorolave"],
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -53,13 +117,17 @@ const ogImage = new URL("/og-image.jpg", origin).href;
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Victor Olave · Senior Fullstack Developer" />
-    <meta property="og:locale" content="en" />
+    <meta property="og:site_name" content="Victor Olave" />
+    <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
     <title>{title}</title>
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
 
     <style is:global>
       :root {

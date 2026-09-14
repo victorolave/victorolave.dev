@@ -47,16 +47,13 @@ All copy is authored in components; there is no CMS. The pieces worth knowing:
 
 ## Deploying
 
-`astro.config.mjs` has no `site` set. Until it does, `astro build` bakes the
-dev-server origin into `<link rel="canonical">` and every `og:`/`twitter:` URL,
-which breaks link previews. Set it before the first deploy:
+`site` in `astro.config.mjs` is set to `https://victorolave.dev`. The canonical
+link, every `og:`/`twitter:` URL, the JSON-LD ids and the sitemap are built from
+it, so change it there if the domain changes — a build without it bakes the
+dev-server origin into the HTML.
 
-```js
-export default defineConfig({
-  site: "https://your-domain.example",
-  // …
-});
-```
+`@astrojs/sitemap` writes `sitemap-index.xml` at build time, and
+`public/robots.txt` points crawlers to it.
 
 ## Accessibility and motion
 
