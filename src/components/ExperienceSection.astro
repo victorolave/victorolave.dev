@@ -12,7 +12,7 @@ const employment = [
     role: "Senior Fullstack Developer",
     org: "Lean Tech",
     location: "Medellín",
-    period: "Sep 2022 — Present",
+    period: "Sep 2022 – Present",
     note: null,
     current: true,
   },
@@ -20,7 +20,7 @@ const employment = [
     role: "Full Stack Engineer",
     org: "iZeven",
     location: "Medellín",
-    period: "Jun 2021 — Jul 2023",
+    period: "Jun 2021 – Jul 2023",
     note: "Full-time → part-time (2022)",
     current: false,
   },
@@ -28,7 +28,7 @@ const employment = [
     role: "Freelance Full Stack Developer",
     org: "Independent",
     location: "Remote",
-    period: "2021 — 2022",
+    period: "2021 – 2022",
     note: "Concurrent · SYP Solutions, Comunix S.A.S., CEOTIC",
     current: false,
   },
@@ -36,7 +36,7 @@ const employment = [
     role: "Full Stack Developer",
     org: "Securitic",
     location: "Popayán",
-    period: "May 2020 — May 2021",
+    period: "May 2020 – May 2021",
     note: null,
     current: false,
   },
@@ -44,11 +44,17 @@ const employment = [
     role: "Full Stack Developer",
     org: "Creazion",
     location: "Popayán",
-    period: "Sep 2019 — May 2020",
+    period: "Sep 2019 – May 2020",
     note: null,
     current: false,
   },
 ];
+
+const education = {
+  degree: "Systems Engineer in Software Development",
+  org: "Corporación Universitaria Comfacauca",
+  period: "Jan 2017 – Jan 2022",
+};
 ---
 
 <section id="experience" class="relative border-t border-[var(--color-border)] bg-[var(--color-bg-deep)]">
@@ -140,12 +146,43 @@ const employment = [
               >
                 {job.period}
                 {job.current && (
-                  <span class="ml-2 text-[var(--color-rose)]">— now</span>
+                  <span class="ml-2 text-[var(--color-rose)]">· now</span>
                 )}
               </span>
             </li>
           ))
         }
+
+        <!-- Education — same index-sheet rhythm as the roles, one rung quieter. -->
+        <li
+          class="grid grid-cols-1 gap-x-8 gap-y-1.5 border-t border-[var(--color-border)] py-6 md:grid-cols-[1fr_auto] md:items-baseline"
+          data-reveal-child
+        >
+          <div>
+            <div class="flex items-baseline gap-3">
+              <span
+                class="mt-[2px] h-[7px] w-[7px] shrink-0 translate-y-[7px] border border-[var(--color-rose)]"
+                aria-hidden="true"
+              />
+              <h4
+                class="fraunces font-light leading-tight text-[var(--color-fg-primary)]"
+                style="font-size: clamp(19px, 2.1vw, 24px);"
+              >
+                {education.degree}
+              </h4>
+            </div>
+            <p class="mt-1.5 pl-[19px] text-[16px] text-[var(--color-fg-secondary)]">
+              {education.org}
+            </p>
+          </div>
+
+          <span
+            class="pl-[19px] font-mono text-[11px] uppercase text-[var(--color-fg-tertiary)] md:pl-0 md:text-right"
+            style="letter-spacing: 0.18em;"
+          >
+            {education.period}
+          </span>
+        </li>
 
         <!-- Closing note: the list is curated; total experience predates it. -->
         <li class="border-t border-[var(--color-border)] pt-6" data-reveal-child>
@@ -154,7 +191,7 @@ const employment = [
             style="letter-spacing: 0.18em;"
           >
             <span class="text-[var(--color-rose)]">+</span>
-            Selected roles — nine years in software since 2017
+            Selected roles · nine years in software since 2017
           </p>
         </li>
       </ol>
