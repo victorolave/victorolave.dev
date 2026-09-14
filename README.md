@@ -1,43 +1,67 @@
-# Astro Starter Kit: Minimal
+# victorolave
 
-```sh
-pnpm create astro@latest -- --template minimal
+Personal portfolio — a single-page editorial site built with Astro.
+
+**Live:** _not yet configured — see [Deploying](#deploying)_
+
+## Stack
+
+| Layer | Choice | Why |
+|---|---|---|
+| Framework | Astro 6 (static output) | One page, zero client framework, ships almost no JS |
+| Styles | Tailwind CSS v4 (via `@tailwindcss/vite`) | No separate design build step |
+| Motion | `motion` + `lenis` | Scroll reveals, pinned case studies, smooth scroll |
+| Graphics | `ogl` | The WebGL grain gradient behind the manifesto panel |
+| Package manager | pnpm (`>=22.12.0` Node) | Pinned in `engines` |
+
+## Commands
+
+| Command | Action |
+|---|---|
+| `pnpm install` | Install dependencies |
+| `pnpm dev` | Dev server on `localhost:4321` |
+| `pnpm build` | Static build into `./dist/` |
+| `pnpm preview` | Serve the build locally |
+
+## Where the content lives
+
+All copy is authored in components; there is no CMS. The pieces worth knowing:
+
+- **`src/data/projects.ts`** — the single source for projects, featured case
+  studies and the About stack list. Every entry must be backed by the CV
+  (`public/victor-olave-cv-2026.pdf`) or by a public repository on
+  [github.com/victorolave](https://github.com/victorolave). No filler entries,
+  no metrics that cannot be defended.
+- **`src/components/ExperienceSection.astro`** — employment history and
+  education, validated against the same CV.
+- **`src/components/TestimonialsSection.astro`** — quotes, names and roles.
+- **`src/components/NowSection.astro`** — the "logbook"; it carries a
+  last-updated date, so it needs a pass every couple of months or it should be
+  removed.
+- **`public/work/*.webp`** — real screenshots of the live products, referenced
+  from the `image` field in `projects.ts`. A project without a screenshot
+  renders a typographic plate instead; there is deliberately no illustrated
+  mock-UI fallback, because a fabricated interface implies a product that does
+  not exist.
+- **`public/og-image.jpg`** — 1200×630 social card.
+
+## Deploying
+
+`astro.config.mjs` has no `site` set. Until it does, `astro build` bakes the
+dev-server origin into `<link rel="canonical">` and every `og:`/`twitter:` URL,
+which breaks link previews. Set it before the first deploy:
+
+```js
+export default defineConfig({
+  site: "https://your-domain.example",
+  // …
+});
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Accessibility and motion
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Every animated surface honours `prefers-reduced-motion`. The preloader resolves
+immediately under reduced motion, and reveal animations fall back to static
+content. Note that browsers throttle `requestAnimationFrame` in background
+tabs, so a page opened in an unfocused tab holds on the preloader until it is
+focused.
