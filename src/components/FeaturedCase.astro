@@ -9,142 +9,368 @@ interface Props {
 
 const { caseStudy, reverse = false } = Astro.props;
 const c = caseStudy;
+
+// [0] sets the box ratio; [1] is the overlay. Anything past the second is
+// ignored rather than stacked — see the cap documented on FeaturedCase.shots.
+const hero = c.shots[0] ?? null;
+const support = c.shots[1] ?? null;
+
+// The first voice is the pull quote; any others follow it at a quieter size.
+// Two equal-weight quotes in a column this narrow would read as a wall of text.
+const [lead, ...others] = c.testimonials ?? [];
+const hasVoice = Boolean(lead) || c.metrics.length > 0;
+
+// Same derivation as the Words section — never stored, so it cannot drift.
+const initialsOf = (name: string) =>
+  name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => [...w][0] ?? "")
+    .join("")
+    .toUpperCase();
 ---
 
-<article
-  class="featured-case grid items-center gap-12 md:gap-20 lg:grid-cols-2"
-  style={reverse ? "direction: rtl;" : ""}
->
-  <!-- Preview — non-interactive display (no real case page yet) -->
-  <div
-    class="featured-case__media relative h-[280px] overflow-hidden rounded-[4px] border border-[var(--color-border)] bg-[#161922] shadow-[0_12px_24px_rgba(0,0,0,0.25)] md:h-[420px]"
-    style="direction: ltr; will-change: transform;"
-    aria-hidden="true"
-  >
-    <div
-      data-parallax
-      data-parallax-speed="0.08"
-      class="h-full w-full will-change-transform"
-    >
-      <div class="featured-case__preview h-full w-full origin-top-left">
-        <Preview kind={c.previewKey} />
-      </div>
-    </div>
-    <!-- Ghost index numeral — editorial chapter marker -->
-    <span
-      class="featured-case__index fraunces-italic pointer-events-none absolute bottom-2 right-4 leading-none"
-    >
-      {c.index}
-    </span>
-  </div>
-
-  <div style="direction: ltr;">
-    <!-- Meta row: case kicker + year / role -->
+<article class:list={["featured-case", reverse && "featured-case--reverse"]}>
+  <!-- ── Head — the claim. Kept to one band so the evidence below gets the
+       height. Reading order is the same in both cases; only the body mirrors. -->
+  <header class="featured-case__head">
     <div
       class="mb-5 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-[var(--color-border)] pb-3"
     >
-      <span class="sheet-mark">CASE · {c.kicker}</span>
+      <span class="sheet-mark">CASE {c.index} · {c.kicker}</span>
       <span
         class="font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)]"
         style="letter-spacing: 0.22em;"
       >
-        {c.year} · {c.role}
+        {c.year && `${c.year} · `}{c.role}
       </span>
     </div>
 
-    <h3
-      class="fraunces mb-5 font-light leading-[1.05] tracking-[-0.04em] text-[var(--color-fg-primary)]"
-      style="font-size: clamp(30px, 4.2vw, 44px);"
-    >
-      {c.title}<em class="fraunces-italic text-[var(--color-rose)]">.</em>
-    </h3>
+    <div class="grid gap-x-12 gap-y-5 lg:grid-cols-12">
+      <h3
+        class="featured-case__title fraunces font-light leading-[1.02] tracking-[-0.04em] text-[var(--color-fg-primary)] lg:col-span-5"
+      >
+        {c.title}<em class="fraunces-italic text-[var(--color-rose)]">.</em>
+      </h3>
 
-    <p
-      class="mb-6 max-w-[480px] text-[16px] leading-[1.7] text-[var(--color-fg-secondary)]"
-    >
-      {c.desc}
-    </p>
+      <div class="lg:col-span-7 lg:pt-1">
+        <p class="max-w-[640px] text-[15px] leading-[1.65] text-[var(--color-fg-secondary)] md:text-[16px]">
+          {c.desc}
+        </p>
 
-    <!-- Highlights — what the work actually did -->
-    <ul class="mb-7 flex max-w-[480px] flex-col gap-2.5">
-      {
-        c.highlights.map((h) => (
-          <li class="flex items-start gap-3 text-[14px] leading-[1.55] text-[var(--color-fg-secondary)]">
-            <span class="mt-[7px] h-[5px] w-[5px] shrink-0 rounded-full bg-[var(--color-rose)]" />
-            {h}
-          </li>
-        ))
-      }
-    </ul>
+        <ul class="featured-case__highlights mt-4 grid max-w-[640px] gap-x-8 gap-y-2 sm:grid-cols-2">
+          {
+            c.highlights.map((h) => (
+              <li class="flex items-start gap-3 text-[13px] leading-[1.5] text-[var(--color-fg-secondary)]">
+                <span class="mt-[6px] h-[5px] w-[5px] shrink-0 rounded-full bg-[var(--color-rose)]" />
+                {h}
+              </li>
+            ))
+          }
+        </ul>
 
-    <!-- Metrics — tabular figures so they don't shift -->
-    <div
-      class="mb-7 grid max-w-[480px] grid-cols-3 gap-6 border-t border-[var(--color-border)] pt-5"
-    >
-      {
-        c.metrics.map((m) => (
-          <div>
-            <div
-              class="fraunces-italic font-light text-[var(--color-fg-primary)]"
-              style="font-size: 30px; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums;"
-            >
-              {m.value}
-            </div>
-            <div
-              class="mt-[6px] text-[10px] uppercase text-[var(--color-fg-tertiary)]"
-              style="letter-spacing: 0.22em;"
-            >
-              {m.label}
-            </div>
-          </div>
-        ))
-      }
+        <!-- Stack as a single mono line: same information as the old pills at a
+             third of the height. -->
+        <p
+          class="mt-4 font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)]"
+          style="letter-spacing: 0.18em;"
+        >
+          {c.tags.join(" · ")}
+        </p>
+      </div>
     </div>
+  </header>
 
-    <!-- Stack tags -->
-    <div class="mb-7 flex flex-wrap gap-2">
-      {
-        c.tags.map((t) => (
-          <span
-            class="rounded-full border border-[var(--color-border)] px-3 py-1 font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)]"
-            style="letter-spacing: 0.14em;"
+  <!-- ── Body — the evidence: the product itself, and the client saying what
+       changed. This is where the height goes. -->
+  <div class="featured-case__body">
+    <!-- The frame is a size container. On desktop the stage takes the largest
+         width that still fits the frame's HEIGHT at the shot's own ratio, so the
+         screenshot grows as far as the viewport allows and the case can never
+         outgrow its sticky layer. -->
+    <div class="featured-case__frame">
+      <div
+        class="featured-case__stage"
+        style={hero
+          ? `--ratio: ${(hero.w / hero.h).toFixed(4)}; aspect-ratio: ${hero.w} / ${hero.h};`
+          : "--ratio: 1.6; aspect-ratio: 16 / 10;"}
+      >
+        <!-- Not aria-hidden: the shots are the evidence for the claim above,
+             and each carries its own caption as alt text. -->
+        <div
+          class="featured-case__media absolute inset-0 overflow-hidden rounded-[4px] border border-[var(--color-border)] bg-[#161922] shadow-[0_30px_70px_-24px_rgba(0,0,0,0.7)]"
+        >
+          <div
+            class:list={[
+              "featured-case__preview h-full w-full origin-center",
+              hero && "featured-case__preview--image",
+            ]}
           >
-            {t}
-          </span>
-        ))
-      }
+            <Preview
+              image={hero?.src ?? null}
+              alt={hero?.caption}
+              title={c.title}
+              stack={c.tags}
+              fit="contain"
+            />
+          </div>
+        </div>
+
+        <!-- Second surface. Outside the media box — which clips — so it breaks
+             the frame and reads as a separate object in front, not a
+             picture-in-picture. It bleeds toward the INNER gutter (the voice
+             column side), never toward the page edge, where the section rail
+             lives. Desktop only: at phone width it would be noise.
+
+             A detail crop, not a second full page; shipped at native size.
+             44% wide keeps the hero the hero. The bleed (4% sideways, 8% down)
+             is reserved in the stage's height budget — see --bleed. -->
+        {support && (
+          <div
+            class="featured-case__support absolute z-20 hidden overflow-hidden rounded-[3px] border border-[var(--color-border)] bg-[#161922] shadow-[0_26px_60px_-16px_rgba(0,0,0,0.9)] md:block"
+            style={`aspect-ratio: ${support.w} / ${support.h};`}
+          >
+            <Preview
+              image={support.src}
+              alt={support.caption}
+              title={c.title}
+              stack={c.tags}
+              fit="contain"
+            />
+          </div>
+        )}
+      </div>
     </div>
 
-    <!-- Case study page not yet available — honest, styled affordance -->
-    <span
-      class="inline-flex items-center gap-[10px] text-[13px] text-[var(--color-fg-tertiary)]"
-    >
-      <span class="h-[6px] w-[6px] rounded-full bg-[var(--color-rose)]"></span>
-      Case study — write-up in progress
-    </span>
+    <!-- Voice — corroboration from the client's side, plus any number that can
+         be defended. It used to be fine print under the copy; it is the
+         strongest evidence the case has, so it gets a column of its own. -->
+    {hasVoice && (
+      <aside class="featured-case__voice" aria-label={`${c.title}: in the client's words`}>
+        {lead && (
+          <figure class="m-0">
+            <svg
+              class="mb-4 h-6 w-6 text-[var(--color-rose)] lg:mb-5 lg:h-7 lg:w-7"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.571-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-3.983v-10h9.983z" />
+            </svg>
+            <blockquote
+              class="featured-case__quote fraunces m-0 font-light text-[var(--color-fg-primary)]"
+            >
+              {lead.quote}
+            </blockquote>
+            <figcaption class="mt-5 flex items-center gap-3">
+              <span class="featured-case__avatar" aria-hidden="true">{initialsOf(lead.name)}</span>
+              <span class="flex flex-col gap-[3px]">
+                <span class="text-[13px] leading-none text-[var(--color-fg-primary)]">
+                  {lead.name}{lead.role && `, ${lead.role}`}
+                </span>
+                <span
+                  class="font-mono text-[10px] uppercase leading-none text-[var(--color-fg-tertiary)]"
+                  style="letter-spacing: 0.18em;"
+                >
+                  {lead.company}
+                </span>
+              </span>
+            </figcaption>
+          </figure>
+        )}
+
+        {others.map((t) => (
+          <figure class="featured-case__second m-0 mt-6 border-t border-[var(--color-border)] pt-5">
+            <blockquote class="m-0 text-[14px] leading-[1.6] text-[var(--color-fg-secondary)]">
+              “{t.quote}”
+            </blockquote>
+            <figcaption class="mt-3 flex items-center gap-3">
+              <span class="featured-case__avatar featured-case__avatar--sm" aria-hidden="true">
+                {initialsOf(t.name)}
+              </span>
+              <span
+                class="font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)]"
+                style="letter-spacing: 0.18em;"
+              >
+                {t.name}{t.role && `, ${t.role}`} · {t.company}
+              </span>
+            </figcaption>
+          </figure>
+        ))}
+
+        <!-- Metrics — tabular figures so they don't shift. Only when the case
+             has numbers it can defend; an empty strip would leave a stray rule. -->
+        {c.metrics.length > 0 && (
+          <div
+            class:list={[
+              "grid gap-6",
+              lead && "mt-7 border-t border-[var(--color-border)] pt-5",
+            ]}
+            style={`grid-template-columns: repeat(${Math.min(c.metrics.length, 3)}, minmax(0, 1fr));`}
+          >
+            {c.metrics.map((m) => (
+              <div>
+                <div
+                  class="fraunces-italic font-light text-[var(--color-fg-primary)]"
+                  style="font-size: clamp(28px, 2.6vw, 38px); letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums;"
+                >
+                  {m.value}
+                </div>
+                <div
+                  class="mt-[6px] text-[10px] uppercase text-[var(--color-fg-tertiary)]"
+                  style="letter-spacing: 0.22em;"
+                >
+                  {m.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </aside>
+    )}
   </div>
 </article>
 
 <style>
-  .featured-case__index {
-    font-size: clamp(56px, 7vw, 104px);
-    color: var(--color-rose);
-    opacity: 0.16;
+  .featured-case {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
   }
-  /* Base zoom lives in CSS (not inline) so the hover can override it. */
+  .featured-case__title {
+    font-size: clamp(32px, 6vw, 48px);
+  }
+  .featured-case__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+  .featured-case__stage {
+    /* Reserved room for the support shot's bleed, as a fraction of the stage. */
+    --bleed-x: 4%;
+    --bleed-y: 8%;
+    position: relative;
+    width: 100%;
+  }
+  .featured-case__support {
+    width: 44%;
+    bottom: calc(var(--bleed-y) * -1);
+    right: calc(var(--bleed-x) * -1);
+  }
+  .featured-case--reverse .featured-case__support {
+    right: auto;
+    left: calc(var(--bleed-x) * -1);
+  }
+
+  .featured-case__quote {
+    font-size: clamp(19px, 4.6vw, 24px);
+    line-height: 1.32;
+    letter-spacing: -0.015em;
+  }
+  .featured-case__avatar {
+    display: inline-flex;
+    height: 36px;
+    width: 36px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--color-fg-primary);
+    /* Mixed from the scoped token, so it resolves on both layers: a rose tint on
+       the dark case, a cream tint on the rose one. */
+    background: color-mix(in srgb, var(--color-rose) 22%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-rose) 40%, transparent);
+  }
+  .featured-case__avatar--sm {
+    height: 26px;
+    width: 26px;
+    font-size: 9px;
+  }
+
+  /* ── Desktop: the case is exactly one viewport tall ──────────────────
+     The sticky layer gives the article a definite height; the head takes what
+     it needs and the body gets the rest. The frame is a size container, so the
+     stage can be sized from the height it actually has:
+       width = min(column width, available height ÷ 1.12 × ratio  (bleed + lift))
+     A tall window grows the screenshot; a short one shrinks it — the case never
+     overflows, which is what keeps the takeover from covering half-read copy. */
+  @media (min-width: 1024px) {
+    .featured-case {
+      height: 100%;
+      gap: clamp(1.5rem, 4.5vh, 3rem);
+    }
+    .featured-case__title {
+      font-size: clamp(34px, min(3.9vw, 6.4vh), 58px);
+    }
+    .featured-case__body {
+      flex: 1 1 0;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+      grid-template-rows: minmax(0, 1fr);
+      column-gap: clamp(3rem, 4.5vw, 5rem);
+    }
+    /* Mirror the tracks too, not just the order — otherwise the frame lands
+       in the narrow column and the screenshot halves. */
+    .featured-case--reverse .featured-case__body {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    }
+    .featured-case--reverse .featured-case__frame {
+      order: 2;
+    }
+    .featured-case__frame {
+      container-type: size;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+    }
+    .featured-case--reverse .featured-case__frame {
+      justify-content: flex-end;
+    }
+    .featured-case__stage {
+      width: min(100cqw, calc(100cqh / 1.12 * var(--ratio)));
+      /* Lift the stage by half the downward bleed so the pair sits optically
+         centred in the frame, not the hero alone. */
+      margin-bottom: calc(100cqh * 0.04);
+    }
+    .featured-case__voice {
+      align-self: center;
+      max-width: 440px;
+    }
+    .featured-case--reverse .featured-case__voice {
+      justify-self: end;
+    }
+    .featured-case__quote {
+      font-size: clamp(18px, min(1.65vw, 2.8vh), 26px);
+    }
+  }
+
+  /* Short desktop windows: the highlights restate the description, so they are
+     the first thing to give way before the screenshot has to. */
+  @media (min-width: 1024px) and (max-height: 780px) {
+    .featured-case__highlights {
+      display: none;
+    }
+  }
+
+  /* Nothing here zooms or parallaxes, and that is the point: the screenshot is
+     the evidence, shown still and whole. It only lifts a little on hover. */
   .featured-case__preview {
-    transform: scale(1.4);
+    transform: scale(1);
     transition: transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .featured-case__media:hover .featured-case__preview {
-    transform: scale(1.46);
+  .featured-case__media:hover .featured-case__preview--image {
+    transform: scale(1.02);
   }
   @media (prefers-reduced-motion: reduce) {
     .featured-case__preview {
       transition: none;
     }
-    .featured-case__media:hover .featured-case__preview {
-      transform: scale(1.4);
+    .featured-case__media:hover .featured-case__preview--image {
+      transform: scale(1);
     }
   }
 </style>

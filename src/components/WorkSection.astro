@@ -4,39 +4,37 @@ import FeaturedCase from "./FeaturedCase.astro";
 import Preview from "./previews/Preview.astro";
 
 // ── Masonry tiles ────────────────────────────────────────────
-// Each tile is either a real project preview or an image placeholder.
-// To add a real image later, swap a { kind: "image" } tile's render for:
-//   <img class="h-full w-full object-cover" src="/work/your-file.jpg" alt="…" />
-// (drop files into /public/work/). Add more tiles to any column freely.
+// Three drifting columns over the six real projects — two per column. Every
+// tile is a project; there are no filler tiles.
+//
+// A tile with a screenshot takes its height from that screenshot's aspect
+// ratio, so the page is shown whole — same rule as the case studies. The `h`
+// below is the fallback for a project with no screenshot, whose typographic
+// plate has no intrinsic ratio to follow. All six have one today; keep the
+// fallback so adding a project without an image does not break the wall.
 const columns = [
   {
     speed: "0.06",
     offset: "",
     items: [
-      { kind: "preview", p: PROJECTS[0], h: "h-[340px]" },
-      { kind: "image", id: "07", h: "h-[220px]" },
-      { kind: "preview", p: PROJECTS[2], h: "h-[280px]" },
-      { kind: "image", id: "08", h: "h-[300px]" },
+      { p: PROJECTS[0], h: "h-[340px]" }, // Dev Senior Code
+      { p: PROJECTS[3], h: "h-[280px]" }, // JQRACE4
     ],
   },
   {
     speed: "0.13",
     offset: "md:mt-24",
     items: [
-      { kind: "image", id: "09", h: "h-[300px]" },
-      { kind: "preview", p: PROJECTS[1], h: "h-[260px]" },
-      { kind: "image", id: "10", h: "h-[340px]" },
-      { kind: "preview", p: PROJECTS[4], h: "h-[240px]" },
+      { p: PROJECTS[2], h: "h-[300px]" }, // Acopio Colombia
+      { p: PROJECTS[5], h: "h-[260px]" }, // Dev Senior Code Junior
     ],
   },
   {
     speed: "0.08",
     offset: "md:mt-10",
     items: [
-      { kind: "preview", p: PROJECTS[3], h: "h-[320px]" },
-      { kind: "image", id: "11", h: "h-[240px]" },
-      { kind: "preview", p: PROJECTS[5], h: "h-[280px]" },
-      { kind: "image", id: "12", h: "h-[320px]" },
+      { p: PROJECTS[1], h: "h-[320px]" }, // EYP Logistics
+      { p: PROJECTS[4], h: "h-[240px]" }, // Plinto
     ],
   },
 ];
@@ -44,12 +42,12 @@ const columns = [
 // Mobile "full shelf" — instead of a literal list, a few real previews recede
 // into the distance: smaller, fainter and more out of focus the deeper they go,
 // so the work reads as continuing beyond what fits. The front card is concrete;
-// the rest dissolve into "more". Non-featured projects, to add to the two case
-// studies shown above rather than repeat them.
+// the rest dissolve into "more". Non-featured projects only, so this adds to the
+// two case studies above rather than repeating them.
 const receding = [
-  { p: PROJECTS[1], h: 248, w: 100, o: 1, blur: 0 }, // Design system CLI
-  { p: PROJECTS[2], h: 208, w: 84, o: 0.5, blur: 1.5 }, // pg-migrate-ts
-  { p: PROJECTS[4], h: 172, w: 70, o: 0.28, blur: 3 }, // Auth microservice
+  { p: PROJECTS[2], h: 248, w: 100, o: 1, blur: 0 }, // Acopio Colombia
+  { p: PROJECTS[5], h: 208, w: 84, o: 0.5, blur: 1.5 }, // Dev Senior Code Junior
+  { p: PROJECTS[3], h: 172, w: 70, o: 0.28, blur: 3 }, // JQRACE4
 ];
 ---
 
@@ -90,7 +88,7 @@ const receding = [
         style="letter-spacing: 0.22em;"
         data-reveal-child
       >
-        Selected fragments · 2021 — 2025
+        Selected work · 2023–2026
       </span>
     </div>
 
@@ -107,20 +105,28 @@ const receding = [
               data-parallax-speed={col.speed}
             >
               {col.items.map((t) => {
-                if (t.kind === "preview" && t.p) {
-                  const p = t.p;
-                  const href = p.link ? `https://${p.link}` : null;
+                const p = t.p;
+                const href = p.link ? `https://${p.link}` : null;
+                // Screenshot tiles are sized by ratio; plates keep the fixed height.
+                const sized = p.image && p.imageW && p.imageH;
                   const card = (
                     <div
-                      class={`masonry-card group relative ${t.h} w-full overflow-hidden rounded-[3px] border border-[var(--color-border)] bg-[#161922] transition-[border-color,box-shadow] duration-500`}
+                      class={`masonry-card group relative w-full overflow-hidden rounded-[3px] border border-[var(--color-border)] bg-[#161922] transition-[border-color,box-shadow] duration-500 ${sized ? "" : t.h}`}
+                      style={sized ? `aspect-ratio: ${p.imageW} / ${p.imageH};` : undefined}
                     >
-                      <div
-                        class="absolute inset-0 origin-center"
-                        style="transform: scale(1.5);"
-                      >
-                        <Preview kind={p.previewKey} />
+                      <div class="absolute inset-0">
+                        <Preview
+                          image={p.image}
+                          title={p.title}
+                          stack={p.stack}
+                          fit={sized ? "contain" : "cover"}
+                        />
                       </div>
-                      <div class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-[rgba(0,0,0,0.88)] to-transparent px-5 pb-4 pt-16">
+                      {/* Caption scrim. Now that tiles show the whole page, the
+                          foot of a screenshot can be bright type of its own —
+                          a soft fade left the card title fighting it. Three
+                          stops, opaque at the base, so the title always wins. */}
+                      <div class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-[rgba(0,0,0,0.96)] via-[rgba(0,0,0,0.72)] to-transparent px-5 pb-4 pt-24">
                         <div>
                           <div
                             class="fraunces text-[16px] text-[var(--color-fg-primary)]"
@@ -144,42 +150,21 @@ const receding = [
                       </div>
                     </div>
                   );
-                  return href ? (
-                    <a
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      data-reveal-child
-                      data-cursor="View"
-                      class="block"
-                      aria-label={`View ${p.title}`}
-                    >
-                      {card}
-                    </a>
-                  ) : (
-                    <div data-reveal-child class="block">
-                      {card}
-                    </div>
-                  );
-                }
-
-                /* Image placeholder — replace inner with <img> later */
-                return (
-                  <div
+                return href ? (
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     data-reveal-child
-                    class={`masonry-card group relative ${t.h} w-full overflow-hidden rounded-[3px] border border-dashed border-[var(--color-border)] bg-[var(--color-bg-elevated)]`}
+                    data-cursor="View"
+                    class="block"
+                    aria-label={`View ${p.title}`}
                   >
-                    <div class="flex h-full w-full flex-col items-center justify-center gap-2 text-[var(--color-fg-quaternary)]">
-                      <span class="fraunces-italic text-[28px] leading-none">
-                        {t.id}
-                      </span>
-                      <span
-                        class="font-mono text-[9px] uppercase"
-                        style="letter-spacing: 0.22em;"
-                      >
-                        Image
-                      </span>
-                    </div>
+                    {card}
+                  </a>
+                ) : (
+                  <div data-reveal-child class="block">
+                    {card}
                   </div>
                 );
               })}
@@ -191,7 +176,7 @@ const receding = [
       <!-- Centered statement, woven into the wall (desktop) -->
       <div
         class="pointer-events-none absolute inset-0 hidden items-center justify-center md:flex"
-        style="background: radial-gradient(ellipse 62% 46% at center, rgba(26,29,36,0.92) 0%, rgba(26,29,36,0.72) 34%, rgba(26,29,36,0) 64%);"
+        style="background: radial-gradient(ellipse 72% 48% at center, rgba(26,29,36,0.98) 0%, rgba(26,29,36,0.96) 28%, rgba(26,29,36,0.84) 48%, rgba(26,29,36,0.46) 68%, rgba(26,29,36,0) 86%);"
         data-reveal-child
       >
         <p
@@ -215,14 +200,23 @@ const receding = [
           <div
             class="work-recede__card"
             aria-hidden={i > 0 ? "true" : undefined}
-            style={`width: ${r.w}%; height: ${r.h}px; opacity: ${r.o}; filter: blur(${r.blur}px); z-index: ${receding.length - i};`}
+            style={`width: ${r.w}%; ${
+              r.p.image && r.p.imageW && r.p.imageH
+                ? `aspect-ratio: ${r.p.imageW} / ${r.p.imageH};`
+                : `height: ${r.h}px;`
+            } opacity: ${r.o}; filter: blur(${r.blur}px); z-index: ${receding.length - i};`}
           >
             <div class="relative h-full w-full overflow-hidden rounded-[3px] border border-[var(--color-border)] bg-[#161922]">
-              <div class="absolute inset-0 origin-center" style="transform: scale(1.5);">
-                <Preview kind={r.p.previewKey} />
+              <div class="absolute inset-0">
+                <Preview
+                  image={r.p.image}
+                  title={r.p.title}
+                  stack={r.p.stack}
+                  fit={r.p.image && r.p.imageW && r.p.imageH ? "contain" : "cover"}
+                />
               </div>
               {i === 0 && (
-                <div class="absolute inset-x-0 bottom-0 flex items-end bg-gradient-to-t from-[rgba(0,0,0,0.88)] to-transparent px-5 pb-4 pt-16">
+                <div class="absolute inset-x-0 bottom-0 flex items-end bg-gradient-to-t from-[rgba(0,0,0,0.96)] via-[rgba(0,0,0,0.72)] to-transparent px-5 pb-4 pt-24">
                   <div
                     class="fraunces text-[16px] text-[var(--color-fg-primary)]"
                     style="letter-spacing: -0.02em;"
@@ -312,17 +306,31 @@ const receding = [
   }
   @media (min-width: 768px) {
     .case-stack__inner {
-      padding: 8rem 3rem;
+      padding: 6rem 3rem;
     }
   }
-  /* Mobile: a stage taller than the viewport pins badly, so drop the
-     pin and let the two cases flow one after another. */
-  @media (max-width: 767px) {
+  /* Desktop: the stage is exactly one viewport. FeaturedCase sizes its
+     screenshot from the height left over, so the case always fits the
+     pinned layer — nothing is still unread when the next one covers it.
+     Top padding clears the fixed nav (80px). */
+  @media (min-width: 1024px) {
+    .case-stack__inner {
+      height: 100vh;
+      height: 100svh;
+      padding: calc(80px + clamp(0.75rem, 3vh, 2.5rem)) 3rem clamp(1.5rem, 5vh, 3.5rem);
+    }
+  }
+  /* Below desktop: a stage taller than the viewport pins badly, and the
+     side-by-side body has no room for the voice column, so drop the pin
+     and let the two cases flow one after another. */
+  @media (max-width: 1023px) {
     .case-stack__layer {
       position: static;
       min-height: 0;
       display: block;
     }
+  }
+  @media (max-width: 767px) {
     .case-stack__inner {
       padding: 2.5rem 1rem;
     }

@@ -1,50 +1,35 @@
 ---
-const items = [
-  {
-    quote: "Victor turned our tangled platform into a system we could actually reason about. Six weeks, zero downtime.",
-    name: "Lucía Reyes",
-    role: "CTO, Avena Health",
-    initials: "LR",
-  },
-  {
-    quote: "Rare combination — strong opinions, low ego. He delivered a migration the previous team had been afraid to touch for two years.",
-    name: "Andrés Cabral",
-    role: "VP Eng, Ledgermark",
-    initials: "AC",
-  },
-  {
-    quote: "Our checkout went from 14 seconds to 2. He explained the why so the team could keep it that way.",
-    name: "Marina Solís",
-    role: "Product Lead, Hila",
-    initials: "MS",
-  },
-  {
-    quote: "He didn't just ship features — he left us with a mental model. Our juniors now make decisions seniors used to gatekeep.",
-    name: "Tomás Iriarte",
-    role: "Head of Engineering, Cobalt",
-    initials: "TI",
-  },
-  {
-    quote: "We hired him for a rescue and got an education. The codebase is calmer, and so is the team that maintains it.",
-    name: "Elena Vargas",
-    role: "Founder, Maremoto",
-    initials: "EV",
-  },
-  {
-    quote: "Most consultants leave a black box behind. Victor left documentation, tests, and a team that understood every line.",
-    name: "Diego Halabi",
-    role: "Director of Tech, Nimbus Pay",
-    initials: "DH",
-  },
-];
+// Real endorsements only. This file used to carry six invented people at
+// invented companies; they are gone. The list now comes from TESTIMONIALS, the
+// same source the featured case reads, so a wording fix lands in both places.
+import { TESTIMONIALS } from "../data/projects";
+
+// Initials are derived, never stored — one less field to drift out of sync
+// with the name it is supposed to abbreviate.
+const initialsOf = (name: string) =>
+  name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => [...w][0] ?? "")
+    .join("")
+    .toUpperCase();
+
+const items = TESTIMONIALS;
+
+// The grid follows the real count instead of assuming three. With two
+// endorsements a three-column track would leave a hole that reads as "one is
+// missing"; two centred columns read as "these are the two."
+const cols = Math.min(items.length, 3);
+const gridCols = cols >= 3 ? "sm:grid-cols-2 md:grid-cols-3" : cols === 2 ? "sm:grid-cols-2" : "";
+const gridWidth = cols >= 3 ? "max-w-[1600px]" : cols === 2 ? "max-w-[980px]" : "max-w-[560px]";
 ---
 
 <section id="words" class="relative bg-[var(--color-bg-base)]">
   <div
-    class="relative mx-auto max-w-[1600px] px-4 pt-12 pb-20 md:px-12 md:pt-16 md:pb-32"
+    class={`relative mx-auto ${gridWidth} px-4 pt-12 pb-20 md:px-12 md:pt-16 md:pb-32`}
     data-reveal
   >
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
+    <div class={`grid grid-cols-1 gap-6 ${gridCols}`}>
       {
         items.map((it) => (
           <figure
@@ -74,14 +59,14 @@ const items = [
                   class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[12px] font-medium"
                   style="background: var(--color-rose-subtle); color: var(--color-rose-tint); letter-spacing: 0.04em;"
                 >
-                  {it.initials}
+                  {initialsOf(it.name)}
                 </div>
                 <div>
                   <div class="text-[14px] font-semibold text-[var(--color-fg-primary)]">
                     {it.name}
                   </div>
                   <div class="mt-0.5 text-[13px] text-[var(--color-fg-secondary)]">
-                    {it.role}
+                    {it.role ? `${it.role}, ${it.company}` : it.company}
                   </div>
                 </div>
               </figcaption>

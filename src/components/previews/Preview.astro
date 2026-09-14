@@ -1,22 +1,69 @@
 ---
-import type { PreviewKey } from "../../data/projects";
-import ApiGateway from "./ApiGateway.astro";
-import DesignCli from "./DesignCli.astro";
-import PgMigrate from "./PgMigrate.astro";
-import Analytics from "./Analytics.astro";
-import Auth from "./Auth.astro";
-import Ecommerce from "./Ecommerce.astro";
-
+// Project preview. Two modes, no third:
+//   · image  — a real screenshot of the live product (public/work/*.webp)
+//   · none   — a typographic plate with the project's own name and stack
+// There is deliberately no illustrated "mock dashboard" mode: a fabricated UI
+// implies a product that does not exist.
 interface Props {
-  kind: PreviewKey;
+  image: string | null;
+  title: string;
+  stack?: readonly string[];
+  /**
+   * How the screenshot meets its box.
+   *  · "cover"   — fills it, cropping whatever does not fit. Right for the
+   *                masonry, where the tiles read as texture.
+   *  · "contain" — the whole page stays visible, letterboxed. Right for a case
+   *                study, where the screenshot IS the evidence: cropping half
+   *                of it away defeats the point of showing it.
+   */
+  fit?: "cover" | "contain";
+  /** Overrides the generic alt. Pass the shot's caption so a screen reader
+   *  gets what the surface shows, not just the product name. */
+  alt?: string;
 }
 
-const { kind } = Astro.props;
+const { image, title, stack = [], fit = "cover", alt } = Astro.props;
 ---
 
-{kind === "api-gateway" && <ApiGateway />}
-{kind === "design-cli" && <DesignCli />}
-{kind === "pg-migrate" && <PgMigrate />}
-{kind === "analytics" && <Analytics />}
-{kind === "auth" && <Auth />}
-{kind === "ecommerce" && <Ecommerce />}
+{
+  image ? (
+    <img
+      src={image}
+      alt={alt ?? `${title}: screenshot of the live product`}
+      class:list={[
+        "h-full w-full",
+        fit === "contain" ? "object-contain object-center" : "object-cover object-top",
+      ]}
+      loading="lazy"
+      decoding="async"
+    />
+  ) : (
+    <div class="flex h-full w-full flex-col justify-between bg-[var(--color-bg-base)] p-[14px]">
+      <span
+        class="text-[7px] uppercase text-[var(--color-fg-tertiary)]"
+        style="letter-spacing: 0.18em;"
+      >
+        Source available
+      </span>
+
+      <span
+        class="fraunces font-light leading-[1.1] tracking-[-0.03em] text-[var(--color-fg-primary)]"
+        style="font-size: clamp(15px, 2.2vw, 22px);"
+      >
+        {title}
+        <em class="fraunces-italic text-[var(--color-rose)]">.</em>
+      </span>
+
+      <ul class="flex flex-wrap gap-x-2 gap-y-1">
+        {stack.slice(0, 4).map((s) => (
+          <li
+            class="font-mono text-[7px] uppercase text-[var(--color-fg-tertiary)]"
+            style="letter-spacing: 0.14em;"
+          >
+            {s}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}

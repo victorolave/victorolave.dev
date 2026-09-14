@@ -348,7 +348,11 @@ export function setupParallax() {
       if (rect.bottom < 0 || rect.top > vh) return;
       const speed = Number(el.dataset.parallaxSpeed ?? "0.12");
       const center = rect.top + rect.height / 2;
-      const offset = (center - vh / 2) * -speed;
+      let offset = (center - vh / 2) * -speed;
+      // A layer clipped by overflow:hidden may only travel as far as the
+      // overscan it was given, otherwise it uncovers the box on tall screens.
+      const max = Number(el.dataset.parallaxMax);
+      if (Number.isFinite(max)) offset = Math.max(-max, Math.min(max, offset));
       el.style.transform = `translate3d(0, ${offset.toFixed(2)}px, 0)`;
     });
   };
@@ -379,14 +383,15 @@ export function setupParallax() {
    takeover has depth instead of a flat swap. The sticky element is
    the layer; we only transform the inner wrapper, so pinning and the
    recede never compete for the same `transform`. Desktop only —
-   mobile renders the cases in plain flow (CSS).
+   below 1024px the cases render in plain flow (CSS).
    ============================================================ */
 export function setupStackCards() {
   if (prefersReducedMotion) return;
   const stack = document.querySelector<HTMLElement>("[data-stack]");
   if (!stack) return;
 
-  const desktop = window.matchMedia("(min-width: 768px)");
+  // Same breakpoint as the sticky pin in WorkSection — below it the cases flow.
+  const desktop = window.matchMedia("(min-width: 1024px)");
   const cards = Array.from(
     stack.querySelectorAll<HTMLElement>("[data-stack-item]"),
   ).map((item) => ({
