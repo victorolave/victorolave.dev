@@ -192,6 +192,44 @@ export const PROJECTS: Project[] = [
     imageW: 1200,
     imageH: 673,
   },
+  {
+    title: "Pumas de Antioquia",
+    desc: "Site for Envigado's first basketball club: its story, training schedules across two venues and open enrolment for children, teens and adults.",
+    stack: ["Astro", "React", "GSAP", "Tailwind", "Vercel"],
+    statuses: ["Live"],
+    year: "2025",
+    link: "pumas-de-antioquia.vercel.app",
+    image: "/work/pumas.webp",
+    imageW: 1200,
+    imageH: 605,
+  },
+  {
+    // Plinto's public face, alongside the app panel above. Same project, a
+    // second tile on purpose: the landing is what a household sees first.
+    title: "Plinto",
+    desc: "Public landing for Plinto: what it does for a household, how to self-host it with Docker Compose, and the AGPL-3.0 licence, shown over demo data.",
+    stack: ["Astro", "Tailwind", "Cloudflare"],
+    statuses: ["Live", "Open source"],
+    year: "2026",
+    link: "plintoapp.com",
+    image: "/work/plinto-landing.webp",
+    imageW: 1200,
+    imageH: 605,
+  },
+  {
+    // Client software, shown anonymised by choice: no product name, no
+    // logo, no link. The screenshot has the institution's logo and copyright
+    // line hidden. Do not put the product or university name back.
+    title: "University lab platform",
+    desc: "Laboratory management for a university engineering faculty: reservations, resources, spaces and users, on a web app backed by its own API.",
+    stack: ["Next.js", "Mantine", "TanStack Query", "NestJS", "Prisma"],
+    statuses: ["In progress"],
+    year: "2024",
+    link: null,
+    image: "/work/labs-login.webp",
+    imageW: 1200,
+    imageH: 675,
+  },
 ];
 
 export const FEATURED: FeaturedCase[] = [
