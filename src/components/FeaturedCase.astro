@@ -371,6 +371,18 @@ const initialsOf = (name: string) =>
     }
   }
 
+  /* Below ~960px of height a second quote cannot fit under the lead one in
+     either language — measured: the voice column has 120–180px spare at
+     720–768px tall, and a second figure costs ~85px before its first line. It
+     is the next thing to give way; nothing is lost, because every testimonial
+     is shown in full in the Words section. Same rule for both locales, so the
+     two pages stay visually identical. */
+  @media (min-width: 1024px) and (max-height: 959px) {
+    .featured-case__second {
+      display: none;
+    }
+  }
+
   /* Nothing here zooms or parallaxes, and that is the point: the screenshot is
      the evidence, shown still and whole. It only lifts a little on hover. */
   .featured-case__preview {
