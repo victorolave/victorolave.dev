@@ -204,6 +204,7 @@ export const es: Dictionary = {
     statementPre: "",
     statementItalic: "Hablemos",
     soon: "Pronto",
+    calendar: "Agenda",
     calendarAria: "Reserva de calendario, próximamente",
     availableNow: "Disponible ahora",
   },

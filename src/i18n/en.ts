@@ -211,6 +211,7 @@ export const en = {
     statementPre: "Let’s",
     statementItalic: "talk",
     soon: "Soon",
+    calendar: "Calendar",
     calendarAria: "Calendar booking, coming soon",
     availableNow: "Available now",
   },
