@@ -29,22 +29,33 @@ export function setupLoader(): Promise<void> {
       return;
     }
 
-    document.body.classList.add("loader-active");
+    // Repeat-visit gate — the head script (Layout.astro) already hid the
+    // loader via CSS before first paint when this flag was set on a prior
+    // navigation this session. Skip the whole sequence, same as reduced
+    // motion, and don't lock scroll for even a frame.
+    const introSkipped = document.documentElement.dataset.intro === "skip";
 
     const finish = () => {
       loader.style.display = "none";
       document.body.classList.remove("loader-active");
       document.documentElement.classList.add("loaded");
+      try {
+        sessionStorage.setItem("introShown", "1");
+      } catch (e) {
+        // Safari private mode etc. — the intro just replays next time.
+      }
       // Removing overflow:hidden can restore a persistent scrollbar and
       // narrow the layout — nudge every fit/scroll driver to re-measure.
       window.dispatchEvent(new Event("resize"));
       resolve();
     };
 
-    if (prefersReducedMotion) {
+    if (prefersReducedMotion || introSkipped) {
       finish();
       return;
     }
+
+    document.body.classList.add("loader-active");
 
     // Split the name into letter spans (keeps the rose "." span intact)
     const letters: HTMLElement[] = [];
@@ -76,13 +87,27 @@ export function setupLoader(): Promise<void> {
     name.style.opacity = "1";
 
     const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-    const STEP = 400; // ms each manifesto word dwells (entrance included)
-    const EXIT_MS = 280;
+    // Timeline tuned for a ~1.5s total first-visit intro (was ~3.5s) — every
+    // duration below scales the original ~0.43x so the same word-cycle →
+    // name-assembly → curtain-exit sequence still reads, just faster. Words
+    // keep a floor around ~180ms visible so short manifesto words stay
+    // legible at a glance.
+    const STEP = 180; // ms each manifesto word dwells (entrance included)
+    const EXIT_MS = 130;
+    const WORD_ENTER_S = 0.22;
+    const NAME_LETTER_DURATION_S = 0.26;
+    const NAME_LETTER_STAGGER_S = 0.012;
+    const NAME_SLEEP_MS = 260; // pause after the name starts assembling, before exit fires
+    const NAME_FADE_S = 0.24;
+    const EXIT_CLIP_S = 0.24;
+    const EXIT_CLIP_DELAY_S = 0.05;
+    const EXIT_VEIL_S = 0.4;
     const EASE_IN_EXPO = [0.7, 0, 0.84, 0] as const;
 
     (async () => {
       // Hairline rides the full word + name sequence
-      const total = (words.length * (STEP + EXIT_MS) + 650) / 1000;
+      const total =
+        (words.length * (STEP + EXIT_MS) + NAME_SLEEP_MS) / 1000 + EXIT_VEIL_S;
       animate(
         bar,
         { transform: ["scaleX(0)", "scaleX(1)"] },
@@ -97,7 +122,7 @@ export function setupLoader(): Promise<void> {
             opacity: [0, 1],
             filter: ["blur(10px)", "blur(0px)"],
           },
-          { duration: 0.5, ease: EASE_OUT_EXPO },
+          { duration: WORD_ENTER_S, ease: EASE_OUT_EXPO },
         );
         await sleep(STEP);
         // Fully await the exit so the next word never shares the stage
@@ -116,9 +141,13 @@ export function setupLoader(): Promise<void> {
       animate(
         letters,
         { transform: ["translateY(120%)", "translateY(0%)"], opacity: [0, 1] },
-        { duration: 0.55, delay: stagger(0.026), ease: EASE_OUT_EXPO },
+        {
+          duration: NAME_LETTER_DURATION_S,
+          delay: stagger(NAME_LETTER_STAGGER_S),
+          ease: EASE_OUT_EXPO,
+        },
       );
-      await sleep(600);
+      await sleep(NAME_SLEEP_MS);
 
       // EXIT — rose sweep: a full-height rose panel wipes bottom→top across
       // the screen in one continuous pass; the dark base clips away just
@@ -128,7 +157,7 @@ export function setupLoader(): Promise<void> {
       animate(
         name,
         { transform: ["translateY(0%)", "translateY(-40%)"], opacity: [1, 0] },
-        { duration: 0.5, ease: EASE_OUT_EXPO },
+        { duration: NAME_FADE_S, ease: EASE_OUT_EXPO },
       );
 
       if (veil) {
@@ -138,19 +167,19 @@ export function setupLoader(): Promise<void> {
         animate(
           loader,
           { clipPath: ["inset(0% 0% 0% 0%)", "inset(0% 0% 100% 0%)"] },
-          { duration: 0.5, delay: 0.1, ease: [0.76, 0, 0.24, 1] },
+          { duration: EXIT_CLIP_S, delay: EXIT_CLIP_DELAY_S, ease: [0.76, 0, 0.24, 1] },
         );
         await animate(
           veil,
           { transform: ["translateY(101%)", "translateY(-101%)"] },
-          { duration: 0.85, ease: [0.76, 0, 0.24, 1] },
+          { duration: EXIT_VEIL_S, ease: [0.76, 0, 0.24, 1] },
         );
       } else {
         // Fallback — simple curtain if the veil is missing
         await animate(
           loader,
           { clipPath: ["inset(0% 0% 0% 0%)", "inset(0% 0% 100% 0%)"] },
-          { duration: 0.7, ease: [0.76, 0, 0.24, 1] },
+          { duration: EXIT_CLIP_S + EXIT_CLIP_DELAY_S, ease: [0.76, 0, 0.24, 1] },
         );
       }
       finish();

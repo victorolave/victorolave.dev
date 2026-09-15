@@ -98,6 +98,18 @@ const jsonLd = {
 <html lang={meta.htmlLang}>
   <head>
     <script is:inline>
+      // Loader gating — on a repeat visit within the same browser session,
+      // skip the full-viewport intro loader entirely. Runs before first paint
+      // so CSS (html[data-intro="skip"] #loader) hides it with no flash; the
+      // flag itself is set in setupLoader()'s finish() (src/scripts/motion.ts)
+      // once an intro has actually played (or been skipped) this session.
+      try {
+        if (sessionStorage.getItem("introShown") === "1") {
+          document.documentElement.setAttribute("data-intro", "skip");
+        }
+      } catch (e) {}
+    </script>
+    <script is:inline>
       // Mark JS available before first paint so we can hide reveal-targets via CSS
       // without flickering on no-JS / slow-JS environments.
       document.documentElement.classList.add("js");

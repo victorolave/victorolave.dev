@@ -119,4 +119,10 @@ const words = dict.loader.words;
   html.loaded #loader {
     pointer-events: none;
   }
+  /* Repeat-visit gate (see the inline head script in Layout.astro) — hides
+     the loader before first paint so there is no flash of the curtain on a
+     session's second+ navigation. */
+  html[data-intro="skip"] #loader {
+    display: none;
+  }
 </style>
