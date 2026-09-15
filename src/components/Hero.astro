@@ -147,7 +147,9 @@ const navLinks = [
         }
       </div>
 
-      <div class="flex items-center gap-4">
+      <!-- Text links only from md up: at phone width they ran ~100px past the
+           right edge, and the menu button already offers the same sections. -->
+      <div class="hidden items-center gap-4 md:flex">
         {
           navLinks.map((l, i) => (
             <>
