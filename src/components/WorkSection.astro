@@ -58,9 +58,11 @@ const columns = [
 // the rest dissolve into "more". Non-featured projects only, so this adds to the
 // two case studies above rather than repeating them.
 const receding = [
-  { p: PROJECTS[2], h: 248, w: 100, o: 1, blur: 0 }, // Acopio Colombia
+  // The front card is the one people actually look at, so it gets the most
+  // vivid shot, not the most important project.
+  { p: PROJECTS[6], h: 248, w: 100, o: 1, blur: 0 }, // Pumas de Antioquia
   { p: PROJECTS[5], h: 208, w: 84, o: 0.5, blur: 1.5 }, // Dev Senior Code Junior
-  { p: PROJECTS[3], h: 172, w: 70, o: 0.28, blur: 3 }, // JQRACE4
+  { p: PROJECTS[7], h: 172, w: 70, o: 0.28, blur: 3 }, // Plinto (landing)
 ];
 ---
 
