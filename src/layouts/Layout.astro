@@ -111,11 +111,16 @@ const jsonLd = {
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fonts are self-hosted (src/styles/global.css @font-face, files in
+         /public/fonts) — no Google Fonts stylesheet round-trip. Preload only
+         the one file the LCP element (the hero name, .fraunces normal)
+         needs; everything else loads as it's discovered, font-display: swap. -->
     <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,30..100;1,9..144,300..700,30..100&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap"
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/fraunces-latin-full-normal.7e744849.woff2"
+      crossorigin
     />
 
     <link rel="canonical" href={canonical} />
