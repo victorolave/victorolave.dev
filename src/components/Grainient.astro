@@ -209,6 +209,10 @@ void main(){
     canvas.style.width = "100%";
     canvas.style.height = "100%";
     canvas.style.display = "block";
+    // Fade the canvas in once it has a real frame — the solid/CSS background
+    // underneath is the fallback while WebGL boots, so there is no blank flash.
+    canvas.style.opacity = "0";
+    canvas.style.transition = "opacity 320ms ease";
     container.appendChild(canvas);
 
     const geometry = new Triangle(gl);
@@ -263,6 +267,11 @@ void main(){
     const ro = new ResizeObserver(setSize);
     ro.observe(container);
     setSize();
+    // First frame is rendered — reveal the canvas (rAF so the opacity:0
+    // frame actually paints before the transition starts).
+    requestAnimationFrame(() => {
+      canvas.style.opacity = "1";
+    });
 
     // Reduced motion → render a single static frame, no loop.
     if (prefersReducedMotion) return;
@@ -304,7 +313,23 @@ void main(){
     tryStart();
   };
 
-  document
-    .querySelectorAll<HTMLElement>("[data-grainient]")
-    .forEach(initGrainient);
+  // Defer WebGL bootstrap off the critical path — ogl init (~50KB module +
+  // shader compile) has no business competing with first paint/LCP. The
+  // solid/CSS background under each .grainient-container is the fallback
+  // shown until this runs, and the canvas itself fades in once it does.
+  const bootGrainients = () => {
+    document
+      .querySelectorAll<HTMLElement>("[data-grainient]")
+      .forEach(initGrainient);
+  };
+
+  const ric = (window as unknown as {
+    requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number;
+  }).requestIdleCallback;
+
+  if (ric) {
+    ric(bootGrainients, { timeout: 1200 });
+  } else {
+    setTimeout(bootGrainients, 200);
+  }
 </script>
