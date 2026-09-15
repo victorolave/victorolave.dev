@@ -1,0 +1,12 @@
+{
+  // Static Astro build served as Workers static assets — no Worker script and
+  // no adapter: `pnpm build` writes dist/, Cloudflare serves it at the edge.
+  "name": "victorolave-dev",
+  "compatibility_date": "2026-09-15",
+  "assets": {
+    "directory": "./dist",
+    // /en and /en/ both resolve to en/index.html, and redirect to the slashed
+    // form the canonical and hreflang links use.
+    "html_handling": "auto-trailing-slash"
+  }
+}

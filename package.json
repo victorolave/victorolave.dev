@@ -2,6 +2,7 @@
   "name": "victor-olave-portfolio",
   "type": "module",
   "version": "0.1.0",
+  "packageManager": "pnpm@11.15.0",
   "engines": {
     "node": ">=22.12.0"
   },
