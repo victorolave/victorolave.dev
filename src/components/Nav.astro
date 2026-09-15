@@ -1,11 +1,22 @@
 ---
+import LanguageSwitcher from "./LanguageSwitcher.astro";
+import { t } from "../i18n";
+import type { Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+
 const links = [
-  { id: "work", label: "Work" },
-  { id: "about", label: "About" },
-  { id: "experience", label: "Experience" },
-  { id: "process", label: "Process" },
-  { id: "words", label: "Words" },
-  { id: "contact", label: "Contact" },
+  { id: "work", label: dict.sections.work },
+  { id: "about", label: dict.sections.about },
+  { id: "experience", label: dict.sections.experience },
+  { id: "process", label: dict.sections.process },
+  { id: "words", label: dict.sections.words },
+  { id: "contact", label: dict.sections.contact },
 ];
 ---
 
@@ -18,38 +29,44 @@ const links = [
   <a
     href="#hero"
     data-nav-link="hero"
-    data-cursor="Top"
+    data-cursor={dict.cursor.top}
     data-magnetic="0.25"
     class="fraunces inline-block text-[19px] font-light tracking-[-0.02em] text-[var(--color-fg-primary)] md:text-[22px]"
-    aria-label="Victor Olave, home"
+    aria-label={dict.a11y.homeLabel}
   >
     Victor Olave<span class="text-[var(--color-rose)]">.</span>
   </a>
 
-  <!-- Center / right navigation -->
-  <div class="hidden items-center gap-9 md:flex">
-    {
-      links.map(({ id, label }) => (
-        <a
-          href={`#${id}`}
-          data-nav-link={id}
-          class="text-[14px] font-medium text-[var(--color-fg-secondary)] transition-colors duration-200 hover:text-[var(--color-fg-primary)] focus-visible:outline-none focus-visible:text-[var(--color-fg-primary)] focus-visible:underline focus-visible:underline-offset-4"
-        >
-          {label}
-        </a>
-      ))
-    }
-  </div>
+  <!-- Right cluster: links, language switcher, burger. The switcher sits
+       outside the `hidden md:flex` links block so it stays visible at every
+       breakpoint (design constraint) and only hides along with the whole nav. -->
+  <div class="flex items-center gap-4 md:gap-6">
+    <div class="hidden items-center gap-6 md:flex lg:gap-9">
+      {
+        links.map(({ id, label }) => (
+          <a
+            href={`#${id}`}
+            data-nav-link={id}
+            class="text-[14px] font-medium text-[var(--color-fg-secondary)] transition-colors duration-200 hover:text-[var(--color-fg-primary)] focus-visible:outline-none focus-visible:text-[var(--color-fg-primary)] focus-visible:underline focus-visible:underline-offset-4"
+          >
+            {label}
+          </a>
+        ))
+      }
+    </div>
 
-  <!-- Mobile burger — 44×44px touch target -->
-  <button
-    id="mobile-menu-button"
-    class="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-border-strong)] text-[var(--color-fg-primary)] md:hidden"
-    aria-label="Toggle menu"
-    aria-expanded="false"
-  >
-    <span class="block h-px w-4 bg-current"></span>
-  </button>
+    <LanguageSwitcher locale={locale} />
+
+    <!-- Mobile burger — 44×44px touch target -->
+    <button
+      id="mobile-menu-button"
+      class="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-border-strong)] text-[var(--color-fg-primary)] md:hidden"
+      aria-label="Toggle menu"
+      aria-expanded="false"
+    >
+      <span class="block h-px w-4 bg-current"></span>
+    </button>
+  </div>
 </nav>
 
 <!-- Mobile drawer -->

@@ -4,6 +4,9 @@
 //   · none   — a typographic plate with the project's own name and stack
 // There is deliberately no illustrated "mock dashboard" mode: a fabricated UI
 // implies a product that does not exist.
+import { t } from "../../i18n";
+import type { Locale } from "../../i18n";
+
 interface Props {
   image: string | null;
   title: string;
@@ -20,16 +23,18 @@ interface Props {
   /** Overrides the generic alt. Pass the shot's caption so a screen reader
    *  gets what the surface shows, not just the product name. */
   alt?: string;
+  locale: Locale;
 }
 
-const { image, title, stack = [], fit = "cover", alt } = Astro.props;
+const { image, title, stack = [], fit = "cover", alt, locale } = Astro.props;
+const dict = t(locale);
 ---
 
 {
   image ? (
     <img
       src={image}
-      alt={alt ?? `${title}: screenshot of the live product`}
+      alt={alt ?? dict.a11y.screenshotAlt(title)}
       class:list={[
         "h-full w-full",
         fit === "contain" ? "object-contain object-center" : "object-cover object-top",
@@ -43,7 +48,7 @@ const { image, title, stack = [], fit = "cover", alt } = Astro.props;
         class="text-[7px] uppercase text-[var(--color-fg-tertiary)]"
         style="letter-spacing: 0.18em;"
       >
-        Source available
+        {dict.work.sourceAvailable}
       </span>
 
       <span

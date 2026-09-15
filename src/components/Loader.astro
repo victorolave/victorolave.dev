@@ -3,7 +3,16 @@
 // Cycles the manifesto words (Design / Detail / Restraint) in serif italic,
 // then assembles "Victor Olave." letter by letter and exits with a
 // clip-path curtain. Driven from src/scripts/motion.ts → setupLoader().
-const words = ["Design", "Detail", "Restraint"];
+import { t } from "../i18n";
+import type { Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+const words = dict.loader.words;
 ---
 
 <div
@@ -34,7 +43,7 @@ const words = ["Design", "Detail", "Restraint"];
     class="absolute left-6 top-12 font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)] md:left-12 md:top-16"
     style="letter-spacing: 0.22em;"
   >
-    Loading folio
+    {dict.loader.loading}
   </div>
   <div
     class="absolute right-6 top-12 font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)] md:right-12 md:top-16"
@@ -88,7 +97,7 @@ const words = ["Design", "Detail", "Restraint"];
       class="font-mono text-[10px] uppercase text-[var(--color-fg-quaternary)]"
       style="letter-spacing: 0.22em;"
     >
-      Senior Fullstack · Envigado, Colombia
+      {dict.loader.tagline}
     </div>
   </div>
 

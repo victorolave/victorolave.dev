@@ -3,6 +3,27 @@
 //   · public/victor-olave-cv-2026.pdf  (employment, client projects)
 //   · github.com/victorolave           (open-source repositories)
 // Do not add a project, metric or link that cannot be backed by one of those.
+import type { Locale } from "../i18n";
+
+/** A value that differs per locale. */
+export type Localized<T> = { en: T; es: T };
+/** Either a plain string (same in both locales — proper nouns, brand names)
+ *  or a per-locale pair. */
+export type Text = string | Localized<string>;
+
+/** Resolves a `Text`/`Localized<T>` value for a locale. Plain values pass
+ *  through unchanged, so most Project fields need no wrapping. */
+export function pick<T>(value: T | Localized<T>, locale: Locale): T {
+  if (
+    value !== null &&
+    typeof value === "object" &&
+    "en" in (value as Record<string, unknown>) &&
+    "es" in (value as Record<string, unknown>)
+  ) {
+    return (value as Localized<T>)[locale];
+  }
+  return value as T;
+}
 
 export type ProjectStatus =
   | "Live"
@@ -12,7 +33,11 @@ export type ProjectStatus =
   | "Open source";
 
 export interface Project {
-  title: string;
+  /** Plain string for proper nouns/brand names (most entries); `Localized`
+   *  only where the title itself is descriptive English text. */
+  title: Text;
+  /** Not rendered anywhere today (grep confirms it) — kept as plain `string`
+   *  on purpose. If this ever becomes visible copy, promote it to `Text`. */
   desc: string;
   stack: string[];
   statuses: ProjectStatus[];
@@ -37,7 +62,7 @@ export interface CaseShot {
   h: number;
   /** What this surface proves. Required on purpose: a shot you cannot caption
    *  has not earned its place. Rendered as the image's alt text. */
-  caption: string;
+  caption: Text;
 }
 
 /** A named endorsement from someone who used the thing.
@@ -46,10 +71,16 @@ export interface CaseShot {
  *  rule is stricter than anywhere else: `quote` may TRIM and translate, never
  *  rephrase. `sourceEs` holds the author's own Spanish, verbatim, so the trim
  *  can be audited against what was actually said. If a claim is not in
- *  `sourceEs`, it does not go in `quote`. */
+ *  `sourceEs`, it does not go in `quote`. `quoteEs` is the ES-facing excerpt:
+ *  one or more CONTIGUOUS fragments of `sourceEs`, joined with "[…]" where
+ *  fragments are non-adjacent. Only the first letter's case and the final
+ *  punctuation may be adjusted — never rephrased, never a fresh translation
+ *  back into Spanish. */
 export interface Testimonial {
   /** Trimmed, translated excerpt. Cut for length, not for message. */
   quote: string;
+  /** ES-facing excerpt, cut directly from `sourceEs`. See interface doc. */
+  quoteEs: string;
   /** The author's own words. Never edit this to fit the layout. */
   sourceEs: string;
   name: string;
@@ -57,6 +88,12 @@ export interface Testimonial {
    *  title for a real person is worse than showing none. */
   role: string;
   company: string;
+}
+
+/** Resolves a testimonial's quote for a locale: EN reads `quote`, ES reads
+ *  `quoteEs` (never `sourceEs` directly — see the interface doc). */
+export function quoteOf(testimonial: Testimonial, locale: Locale): string {
+  return locale === "es" ? testimonial.quoteEs : testimonial.quote;
 }
 
 /** Every endorsement on the site, in one place. Both the Words section and the
@@ -70,6 +107,8 @@ export const TESTIMONIALS: Testimonial[] = [
   {
     quote:
       "Our previous site was for internal use only. Clients could not use it, nor track their shipments. Now they manage shipments and pay quickly and securely, even linking Apple Pay.",
+    quoteEs:
+      "Nuestra página anterior […] era de uso interno de la empresa y no estaba disponible para que los clientes la utilizaran, ni pudieran hacer el rastreo de sus envíos. […] los usuarios pueden gestionar sus envíos y realizar pagos de forma ágil y segura, incluso enlazando su cuenta con Apple Pay.",
     sourceEs:
       "Cosa que con nuestra página anterior no se podía, pues era de uso interno de la empresa y no estaba disponible para que los clientes la utilizaran, ni pudieran hacer el rastreo de sus envíos. […] los usuarios pueden gestionar sus envíos y realizar pagos de forma ágil y segura, incluso enlazando su cuenta con Apple Pay.",
     name: "David Vásquez",
@@ -79,6 +118,8 @@ export const TESTIMONIALS: Testimonial[] = [
   {
     quote:
       "We used to enter every client's information by hand. Now the clients feed the system themselves: they register, request and pay, which freed us to focus on what grows the business.",
+    quoteEs:
+      "Antes teníamos que ingresar manualmente nosotros mismos toda la información de cada cliente. Ahora, son los clientes quienes individualmente nutren el sistema, realizan solicitudes, pagos etc. Ha permitido incluso que los clientes se registren por sí solos y eso nos ha permitido a nosotros enfocarnos en otras cosas que son también críticas para el crecimiento del negocio.",
     sourceEs:
       "Antes teníamos que ingresar manualmente nosotros mismos toda la información de cada cliente. Ahora, son los clientes quienes individualmente nutren el sistema, realizan solicitudes, pagos etc. Ha permitido incluso que los clientes se registren por sí solos y eso nos ha permitido a nosotros enfocarnos en otras cosas que son también críticas para el crecimiento del negocio.",
     name: "Natalia Jaramillo",
@@ -97,6 +138,8 @@ export const TESTIMONIALS: Testimonial[] = [
     // platform alone produced the hour.
     quote:
       "The platform took the repetitive data entry off me and gave me the autonomy to resolve directly what used to need long manual processes. The hour that once scheduled a single day now schedules the whole week.",
+    quoteEs:
+      "La plataforma me quitó el trabajo repetitivo de carga y me dio autonomía para resolver directamente lo que antes exigía procesos manuales largos. La hora que antes me alcanzaba para programar un solo día, hoy me alcanza para programar la semana completa.",
     sourceEs:
       "La plataforma me quitó el trabajo repetitivo de carga y me dio autonomía para resolver directamente lo que antes exigía procesos manuales largos. La hora que antes me alcanzaba para programar un solo día, hoy me alcanza para programar la semana completa en las dos plataformas.",
     name: "Julián Villanueva",
@@ -107,19 +150,22 @@ export const TESTIMONIALS: Testimonial[] = [
 
 export interface FeaturedCase {
   index: string; // "01" — editorial chapter marker
-  kicker: string; // short label, e.g. "Education platform"
+  kicker: Text; // short label, e.g. "Education platform"
   /** [0] is the hero and sets the media box's ratio; [1] is laid over its
    *  bottom-left corner as a second surface. Two is the cap — a third stops
    *  reading as depth and starts reading as clutter in a box this size. */
   shots: CaseShot[];
-  title: string;
-  desc: string;
-  year: string;
-  role: string;
+  title: Text;
+  desc: Text;
+  year: Text;
+  role: Text;
+  /** Tech stack — proper nouns/brand names, unlocalized in both locales. */
   tags: string[];
-  highlights: string[];
+  /** One `Localized` entry per bullet (not `Localized<string[]>`) so each
+   *  highlight's translation sits next to its English source. */
+  highlights: Localized<string>[];
   /** Only numbers that can be defended in an interview. Empty is fine. */
-  metrics: { value: string; label: string }[];
+  metrics: { value: Text; label: Text }[];
   /** Corroboration from the client's own side. Empty is fine — an invented or
    *  padded testimonial is worth less than none. */
   testimonials?: Testimonial[];
@@ -220,7 +266,7 @@ export const PROJECTS: Project[] = [
     // Client software, shown anonymised by choice: no product name, no
     // logo, no link. The screenshot has the institution's logo and copyright
     // line hidden. Do not put the product or university name back.
-    title: "University lab platform",
+    title: { en: "University lab platform", es: "Plataforma de laboratorios universitaria" },
     desc: "Laboratory management for a university engineering faculty: reservations, resources, spaces and users, on a web app backed by its own API.",
     stack: ["Next.js", "Mantine", "TanStack Query", "NestJS", "Prisma"],
     statuses: ["In progress"],
@@ -235,7 +281,7 @@ export const PROJECTS: Project[] = [
 export const FEATURED: FeaturedCase[] = [
   {
     index: "01",
-    kicker: "Education platform",
+    kicker: { en: "Education platform", es: "Plataforma educativa" },
     // The student portal, not the marketing site: the case claims a platform
     // replaced the chat threads, and this is that platform. Only the two
     // instructor names are substituted; the programs are the public catalogue
@@ -245,32 +291,45 @@ export const FEATURED: FeaturedCase[] = [
         src: "/work/devseniorcode-academy.webp",
         w: 1200,
         h: 571,
-        caption:
-          "Student dashboard: active programs and the day's agenda, with sessions and instructors scheduled",
+        caption: {
+          en: "Student dashboard: active programs and the day's agenda, with sessions and instructors scheduled",
+          es: "Panel del estudiante: programas activos y la agenda del día, con sesiones e instructores programados",
+        },
       },
       {
         src: "/work/devseniorcode-program.webp",
         w: 647,
         h: 470,
-        caption:
-          "Program detail: modules, live and recorded progress, and every session with its date, length and instructor",
+        caption: {
+          en: "Program detail: modules, live and recorded progress, and every session with its date, length and instructor",
+          es: "Detalle del programa: módulos, progreso en vivo y grabado, y cada sesión con su fecha, duración e instructor",
+        },
       },
     ],
-    title: "An academy that outgrew WhatsApp",
-    desc: "Dev Senior Code ran its whole operation through chat threads. I led the build of the platform underneath it: student portal, admin dashboard, program management and scheduling, automated where it made sense and with humans kept in the loop where it mattered.",
-    year: "2023 – Present",
-    role: "Lead engineer",
+    title: { en: "An academy that outgrew WhatsApp", es: "Una academia que superó WhatsApp" },
+    desc: {
+      en: "Dev Senior Code ran its whole operation through chat threads. I led the build of the platform underneath it: student portal, admin dashboard, program management and scheduling, automated where it made sense and with humans kept in the loop where it mattered.",
+      es: "Dev Senior Code operaba por completo desde hilos de chat. Lideré la construcción de la plataforma que lo reemplazó: portal de estudiantes, panel administrativo, gestión de programas y horarios, automatizada donde tenía sentido y con supervisión humana donde importaba.",
+    },
+    year: { en: "2023 – Present", es: "2023 – Presente" },
+    role: { en: "Lead engineer", es: "Líder técnico" },
     tags: ["Next.js", "NestJS", "React", "PostgreSQL", "MongoDB", "Redis", "n8n"],
     highlights: [
-      "Student portal and admin dashboard replacing WhatsApp-based operations",
-      "Program management and scheduling automated end to end",
+      {
+        en: "Student portal and admin dashboard replacing WhatsApp-based operations",
+        es: "Portal de estudiantes y panel administrativo que reemplazan la operación por WhatsApp",
+      },
+      {
+        en: "Program management and scheduling automated end to end",
+        es: "Gestión de programas y horarios automatizada de principio a fin",
+      },
     ],
-    metrics: [{ value: "1,500+", label: "developers" }],
+    metrics: [{ value: "1,500+", label: { en: "developers", es: "desarrolladores" } }],
     testimonials: TESTIMONIALS.filter((t) => t.company === "Dev Senior Code"),
   },
   {
     index: "02",
-    kicker: "Logistics product",
+    kicker: { en: "Logistics product", es: "Producto de logística" },
     // The admin platform, not the marketing site: the case claims the legacy
     // system and manual customer ops were replaced, and this is where that is
     // visible. Names, avatars and volumes are substituted — the client's real
@@ -280,25 +339,38 @@ export const FEATURED: FeaturedCase[] = [
         src: "/work/eyp-admin.webp",
         w: 1200,
         h: 636,
-        caption:
-          "Admin dashboard: weekly volume, load per responsable and top clients, replacing the chat threads",
+        caption: {
+          en: "Admin dashboard: weekly volume, load per responsable and top clients, replacing the chat threads",
+          es: "Panel administrativo: volumen semanal, carga por responsable y principales clientes, en reemplazo de los hilos de chat",
+        },
       },
       {
         src: "/work/eyp-trackings.webp",
         w: 754,
         h: 490,
-        caption:
-          "Tracking register: every shipment logged with its carrier and date, searchable, filterable and exportable",
+        caption: {
+          en: "Tracking register: every shipment logged with its carrier and date, searchable, filterable and exportable",
+          es: "Registro de rastreo: cada envío registrado con su transportadora y fecha, buscable, filtrable y exportable",
+        },
       },
     ],
-    title: "The operation, out of the chat threads",
-    desc: "A legacy logistics platform plus customer operations over WhatsApp, replaced by one product: marketing site, client portal, admin platform and integrated payments. Customers now track, request and pay without messaging anyone.",
-    year: "",
-    role: "Product designer & engineer",
+    title: { en: "The operation, out of the chat threads", es: "La operación, fuera de los hilos de chat" },
+    desc: {
+      en: "A legacy logistics platform plus customer operations over WhatsApp, replaced by one product: marketing site, client portal, admin platform and integrated payments. Customers now track, request and pay without messaging anyone.",
+      es: "Una plataforma heredada y la atención a clientes por WhatsApp, reemplazadas por un solo producto: sitio, portal de clientes, panel administrativo y pagos integrados. Ahora los clientes rastrean, solicitan y pagan sin escribir a nadie.",
+    },
+    year: { en: "", es: "" },
+    role: { en: "Product designer & engineer", es: "Diseñador de producto e ingeniero" },
     tags: ["Next.js", "NestJS", "PostgreSQL"],
     highlights: [
-      "Admin platform replacing the legacy system and manual customer ops",
-      "Client portal with tracking, requests and integrated payments",
+      {
+        en: "Admin platform replacing the legacy system and manual customer ops",
+        es: "Plataforma administrativa que reemplaza el sistema heredado y la operación manual",
+      },
+      {
+        en: "Client portal with tracking, requests and integrated payments",
+        es: "Portal de clientes con rastreo, solicitudes y pagos integrados",
+      },
     ],
     metrics: [],
     // Two voices from the same client, deliberately kept: one speaks for the
@@ -312,13 +384,18 @@ export const FEATURED: FeaturedCase[] = [
 ];
 
 // "What I reach for" — About section. Ordered by where the work is going,
-// matching the positioning of the 2026 CV.
-export const STACK = [
+// matching the positioning of the 2026 CV. `cat`/`items` localize only where
+// the English word isn't already the common Spanish dev term (Frontend,
+// Backend, tech proper nouns stay as plain values, resolved via `pick`).
+export const STACK: { cat: Text; items: string[] | Localized<string[]> }[] = [
   {
-    cat: "AI engineering",
-    items: ["LLM integration", "Agents & MCP", "RAG", "Prompt engineering"],
+    cat: { en: "AI engineering", es: "Ingeniería de IA" },
+    items: {
+      en: ["LLM integration", "Agents & MCP", "RAG", "Prompt engineering"],
+      es: ["Integración de LLMs", "Agentes y MCP", "RAG", "Ingeniería de prompts"],
+    },
   },
   { cat: "Frontend", items: ["React", "TypeScript", "Next.js", "Angular"] },
   { cat: "Backend", items: ["Node.js", "NestJS", "Express", "REST"] },
-  { cat: "Data", items: ["PostgreSQL", "MongoDB", "Redis"] },
-] as const;
+  { cat: { en: "Data", es: "Datos" }, items: ["PostgreSQL", "MongoDB", "Redis"] },
+];

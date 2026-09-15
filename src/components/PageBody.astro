@@ -1,0 +1,133 @@
+---
+// Shared page body for both locales. Layout builds the head; this builds
+// everything inside <body>. `locale` threads to every section so each one
+// can resolve its own copy from the dictionary — components not yet wired
+// to `t()` (Phase 5) simply ignore the extra prop.
+import Loader from "./Loader.astro";
+import CustomCursor from "./CustomCursor.astro";
+import ScrollProgress from "./ScrollProgress.astro";
+import Nav from "./Nav.astro";
+import SideRails from "./SideRails.astro";
+import Hero from "./Hero.astro";
+import Grainient from "./Grainient.astro";
+import SectionDivider from "./SectionDivider.astro";
+import ProcessSection from "./ProcessSection.astro";
+import WorkSection from "./WorkSection.astro";
+import ManifestoSection from "./ManifestoSection.astro";
+import TestimonialsSection from "./TestimonialsSection.astro";
+import NowSection from "./NowSection.astro";
+import AboutSection from "./AboutSection.astro";
+import ExperienceSection from "./ExperienceSection.astro";
+import SkillsSection from "./SkillsSection.astro";
+import ContactSection from "./ContactSection.astro";
+import Footer from "./Footer.astro";
+import { t } from "../i18n";
+import type { Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+---
+
+<Loader locale={locale} />
+<CustomCursor />
+<ScrollProgress />
+<Nav locale={locale} />
+<SideRails locale={locale} />
+
+<main>
+  <Hero locale={locale} />
+
+  <div class="rose-field">
+    <!-- One impressionist ground, pinned across the whole rose zone, so the
+         "The work." divider and the first featured case sit on the SAME
+         continuous painterly render — no seam between two separate canvases at
+         different aspect ratios. Solid rose underneath is the no-WebGL/JS
+         fallback; the opaque second case + masonry below cover it. -->
+    <div class="rose-field__bg" aria-hidden="true">
+      <div class="rose-field__bg-sticky">
+        <Grainient
+          class="h-full w-full"
+          color1="#D87A99"
+          color2="#C04970"
+          color3="#8C2B4A"
+          timeSpeed={0.12}
+          colorBalance={0.0}
+          contrast={1.2}
+          saturation={1.1}
+          grainAmount={0.11}
+          grainScale={2.4}
+          grainAnimated={false}
+          warpStrength={1.1}
+          warpFrequency={4.0}
+          warpAmplitude={85}
+          warpSpeed={1.6}
+          rotationAmount={300}
+          noiseScale={1.25}
+          blendSoftness={0.12}
+          zoom={1.1}
+        />
+      </div>
+    </div>
+
+    <SectionDivider
+      label={dict.dividers.work.label}
+      word={dict.dividers.work.word}
+      background="transparent"
+      tone="rose"
+      borderTop={false}
+    />
+    <WorkSection locale={locale} />
+  </div>
+
+  <SectionDivider
+    label={dict.dividers.about.label}
+    word={dict.dividers.about.word}
+    background="var(--color-bg-deep)"
+  />
+  <AboutSection locale={locale} />
+
+  <SectionDivider
+    label={dict.dividers.experience.label}
+    word={dict.dividers.experience.word}
+    background="var(--color-bg-deep)"
+  />
+  <ExperienceSection locale={locale} />
+
+  <ManifestoSection locale={locale} />
+
+  <SectionDivider
+    label={dict.dividers.process.label}
+    word={dict.dividers.process.word}
+    background="var(--color-bg-deep)"
+  />
+  <ProcessSection locale={locale} />
+
+  <SectionDivider
+    label={dict.dividers.words.label}
+    word={dict.dividers.words.word}
+    background="var(--color-bg-base)"
+  />
+  <TestimonialsSection locale={locale} />
+
+  <SectionDivider
+    label={dict.dividers.skills.label}
+    word={dict.dividers.skills.word}
+    background="var(--color-bg-deep)"
+  />
+  <SkillsSection locale={locale} />
+
+  <SectionDivider
+    label={dict.dividers.now.label}
+    word={dict.dividers.now.word}
+    background="var(--color-bg-deep)"
+  />
+  <NowSection locale={locale} />
+
+  <ContactSection locale={locale} />
+</main>
+
+<Footer locale={locale} />

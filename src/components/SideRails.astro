@@ -3,13 +3,22 @@
 //  · left  — a fixed section counter "(0X)" in serif, vertically centered
 //  · right — a vertical "you are here" section nav with a growing tick
 // Both driven by setupSideRails() in src/scripts/motion.ts.
+import { t } from "../i18n";
+import type { Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
 
 const sections = [
-  { id: "process", label: "Process" },
-  { id: "work", label: "Work" },
-  { id: "about", label: "About" },
-  { id: "skills", label: "Skills" },
-  { id: "contact", label: "Contact" },
+  { id: "process", label: dict.sections.process },
+  { id: "work", label: dict.sections.work },
+  { id: "about", label: dict.sections.about },
+  { id: "skills", label: dict.sections.skills },
+  { id: "contact", label: dict.sections.contact },
 ];
 const total = String(sections.length).padStart(2, "0");
 ---

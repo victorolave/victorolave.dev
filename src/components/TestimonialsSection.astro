@@ -2,7 +2,14 @@
 // Real endorsements only. This file used to carry six invented people at
 // invented companies; they are gone. The list now comes from TESTIMONIALS, the
 // same source the featured case reads, so a wording fix lands in both places.
-import { TESTIMONIALS } from "../data/projects";
+import { TESTIMONIALS, quoteOf } from "../data/projects";
+import type { Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
 
 // Initials are derived, never stored — one less field to drift out of sync
 // with the name it is supposed to abbreviate.
@@ -51,7 +58,7 @@ const gridWidth = cols >= 3 ? "max-w-[1600px]" : cols === 2 ? "max-w-[980px]" : 
                 class="m-0 font-sans font-normal text-[var(--color-fg-primary)]"
                 style="font-size: clamp(15px, 1.1vw, 17px); line-height: 1.6; letter-spacing: -0.005em;"
               >
-                {it.quote}
+                {quoteOf(it, locale)}
               </blockquote>
 
               <figcaption class="flex items-center gap-3.5">

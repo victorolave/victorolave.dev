@@ -3,6 +3,15 @@
 // A single vertical axis: eyebrow → serif statement → the email as the hero
 // CTA → secondary channels inline → availability. No burgundy zone — the dark
 // is the whole page.
+import { t } from "../i18n";
+import type { Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
 
 const email = {
   value: "victorolave1131@gmail.com",
@@ -10,11 +19,10 @@ const email = {
 };
 
 const channels = [
-  { label: "GitHub", href: "https://github.com/victorolave", cursor: "View", disabled: false },
-  { label: "LinkedIn", href: "https://linkedin.com/in/victorolave", cursor: "Connect", disabled: false },
-  { label: "Calendar", href: "#", cursor: "Book", disabled: true },
+  { label: "GitHub", href: "https://github.com/victorolave", cursor: dict.cursor.view, disabled: false },
+  { label: "LinkedIn", href: "https://linkedin.com/in/victorolave", cursor: dict.cursor.connect, disabled: false },
+  { label: "Calendar", href: "#", cursor: dict.cursor.book, disabled: true },
 ];
-
 ---
 
 <section
@@ -26,7 +34,7 @@ const channels = [
     data-reveal
   >
     <!-- Eyebrow -->
-    <span class="eyebrow" data-reveal-child>Get in touch</span>
+    <span class="eyebrow" data-reveal-child>{dict.contact.eyebrow}</span>
 
     <!-- Statement -->
     <h2
@@ -34,13 +42,13 @@ const channels = [
       style="font-size: clamp(64px, 12vw, 200px);"
       data-reveal-child
     >
-      Let&rsquo;s <em class="fraunces-italic text-[var(--color-rose)]">talk</em>.
+      {dict.contact.statementPre} <em class="fraunces-italic text-[var(--color-rose)]">{dict.contact.statementItalic}</em>.
     </h2>
 
     <!-- Email — the hero CTA -->
     <a
       href={email.href}
-      data-cursor="Send"
+      data-cursor={dict.cursor.send}
       data-magnetic="0.4"
       class="group mt-12 inline-flex items-center gap-3 font-light text-[var(--color-fg-primary)] transition-colors duration-200 hover:text-[var(--color-rose)]"
       style="font-size: clamp(28px, 5vw, 64px); letter-spacing: -0.02em;"
@@ -64,11 +72,11 @@ const channels = [
             <span
               class="inline-flex items-center gap-2 py-2.5 font-mono text-[11px] uppercase text-[var(--color-fg-tertiary)] cursor-default"
               style="letter-spacing: 0.22em;"
-              aria-label="Calendar booking, coming soon"
+              aria-label={dict.contact.calendarAria}
             >
               {c.label}
               <span class="rounded-sm bg-[var(--color-bg-surface)] px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-[var(--color-fg-tertiary)]">
-                Soon
+                {dict.contact.soon}
               </span>
             </span>
           ) : (
@@ -96,7 +104,7 @@ const channels = [
       style="letter-spacing: 0.22em;"
       data-reveal-child
     >
-      Available now
+      {dict.contact.availableNow}
     </p>
   </div>
 </section>

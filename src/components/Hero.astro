@@ -11,6 +11,15 @@
 // setupHeroSplit() writing inline styles to [data-hero-*] targets.
 
 import Grainient from "./Grainient.astro";
+import { t } from "../i18n";
+import type { Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
 
 const githubSvg = `<svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>`;
 const linkedinSvg = `<svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>`;
@@ -19,13 +28,13 @@ const mailSvg = `<svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="cu
 const socials = [
   { label: "GitHub", href: "https://github.com/victorolave", svg: githubSvg },
   { label: "LinkedIn", href: "https://linkedin.com/in/victorolave", svg: linkedinSvg },
-  { label: "Email", href: "mailto:victorolave1131@gmail.com", svg: mailSvg },
+  { label: dict.a11y.email, href: "mailto:victorolave1131@gmail.com", svg: mailSvg },
 ];
 
 const navLinks = [
-  { label: "Work", href: "#work" },
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
+  { label: dict.sections.work, href: "#work" },
+  { label: dict.sections.about, href: "#about" },
+  { label: dict.sections.contact, href: "#contact" },
 ];
 ---
 
@@ -35,7 +44,7 @@ const navLinks = [
 >
   <!-- The visible name is two animated spans, so the heading search engines
        read lives here: name, role and place, in plain text. -->
-  <h1 class="sr-only">Victor Olave, senior fullstack developer in the Medellín area, Colombia</h1>
+  <h1 class="sr-only">{dict.meta.heroHeading}</h1>
 
   <div
     class="hero-sticky sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden"
@@ -81,9 +90,8 @@ const navLinks = [
         class="hero-statement fraunces text-center font-light leading-[1.04] tracking-[-0.045em] text-[var(--color-fg-primary)]"
         style="font-size: clamp(40px, 5.6vw, 84px); max-width: 980px;"
       >
-        Nine years turning ambiguous problems into software that
-        <span class="fraunces-italic text-[var(--color-rose)]">simply works</span>. And
-        keeps working.
+        {dict.hero.statementPre}
+        <span class="fraunces-italic text-[var(--color-rose)]">{dict.hero.statementItalic}</span>{dict.hero.statementPost}
       </p>
     </div>
 
@@ -93,9 +101,9 @@ const navLinks = [
       class="hero-desc absolute left-4 top-[92px] z-20 max-w-[360px] leading-[1.4] tracking-[-0.01em] text-[var(--color-fg-primary)] md:left-12 md:top-[132px] md:max-w-[480px]"
       style="font-size: clamp(20px, 2vw, 30px);"
     >
-      Quiet builder, <span class="fraunces-italic text-black"
-        >turning ideas into systems,</span
-      > through design, detail and restraint.
+      {dict.hero.descPre} <span class="fraunces-italic text-black"
+        >{dict.hero.descItalic}</span
+      > {dict.hero.descPost}
     </p>
 
     <!-- Name — inner edges anchored to center; split tracks the image width -->
@@ -130,7 +138,7 @@ const navLinks = [
               href={s.href}
               target={s.href.startsWith("http") ? "_blank" : undefined}
               rel={s.href.startsWith("http") ? "noopener noreferrer" : undefined}
-              data-cursor="View"
+              data-cursor={dict.cursor.view}
               aria-label={s.label}
               class="inline-flex h-11 w-11 items-center justify-center -m-1 text-[var(--color-fg-primary)] transition-colors duration-200 hover:text-[var(--color-rose)]"
               set:html={s.svg}

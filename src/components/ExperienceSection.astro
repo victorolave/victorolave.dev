@@ -4,36 +4,52 @@
 // Two-column on desktop like About: left states the thesis, right lists the
 // roles. A downloadable CV sits in the left column for fast hiring scans.
 // Data validated against "Victor Olave — 2026" CV (public/victor-olave-cv-2026.pdf).
+//
+// Role text is translated via dict.experience.jobs (keyed by a stable id
+// below). org/period/current and city proper nouns stay as component data.
+// UI phrases embedded in location/note ("Remote", "Full-time → part-time",
+// "Concurrent") are sourced from the dictionary (dict.experience.remote /
+// noteFullTimeToPartTime / noteConcurrent) so nothing English leaks into ES;
+// company names in `note` stay literal (not translatable content).
+import { t } from "../i18n";
+import type { Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
 
 const cvHref = "/victor-olave-cv-2026.pdf";
 
 const employment = [
   {
-    role: "Senior Fullstack Developer",
+    id: "leanTech" as const,
     org: "Lean Tech",
     location: "Medellín",
-    period: "Sep 2022 – Present",
+    period: `Sep 2022 – ${dict.experience.present}`,
     note: null,
     current: true,
   },
   {
-    role: "Full Stack Engineer",
+    id: "izeven" as const,
     org: "iZeven",
     location: "Medellín",
     period: "Jun 2021 – Jul 2023",
-    note: "Full-time → part-time (2022)",
+    note: dict.experience.noteFullTimeToPartTime,
     current: false,
   },
   {
-    role: "Freelance Full Stack Developer",
+    id: "freelance" as const,
     org: "Independent",
-    location: "Remote",
+    location: dict.experience.remote,
     period: "2021 – 2022",
-    note: "Concurrent · SYP Solutions, Comunix S.A.S., CEOTIC",
+    note: `${dict.experience.noteConcurrent} · SYP Solutions, Comunix S.A.S., CEOTIC`,
     current: false,
   },
   {
-    role: "Full Stack Developer",
+    id: "securitic" as const,
     org: "Securitic",
     location: "Popayán",
     period: "May 2020 – May 2021",
@@ -41,7 +57,7 @@ const employment = [
     current: false,
   },
   {
-    role: "Full Stack Developer",
+    id: "creazion" as const,
     org: "Creazion",
     location: "Popayán",
     period: "Sep 2019 – May 2020",
@@ -51,7 +67,6 @@ const employment = [
 ];
 
 const education = {
-  degree: "Systems Engineer in Software Development",
   org: "Corporación Universitaria Comfacauca",
   period: "Jan 2017 – Jan 2022",
 };
@@ -65,13 +80,13 @@ const education = {
     <div class="grid grid-cols-1 gap-12 md:grid-cols-[minmax(0,360px)_1fr] md:gap-24">
       <!-- LEFT: thesis + availability + CV -->
       <div class="flex flex-col md:sticky md:top-28 md:self-start" data-reveal-child>
-        <div class="eyebrow mb-8">Employment history</div>
+        <div class="eyebrow mb-8">{dict.experience.eyebrow}</div>
 
         <h3
           class="fraunces font-light leading-[0.95] tracking-[-0.04em] text-[var(--color-fg-primary)]"
           style="font-size: clamp(40px, 5vw, 72px);"
         >
-          The track <span class="fraunces-italic text-[var(--color-rose)]">record</span>.
+          {dict.experience.headingPre} <span class="fraunces-italic text-[var(--color-rose)]">{dict.experience.headingItalic}</span>.
         </h3>
 
         <!-- Availability -->
@@ -86,7 +101,7 @@ const education = {
             class="font-mono text-[11px] uppercase text-[var(--color-fg-secondary)]"
             style="letter-spacing: 0.22em;"
           >
-            Available for work
+            {dict.experience.available}
           </span>
         </div>
 
@@ -94,11 +109,13 @@ const education = {
         <a
           href={cvHref}
           download
-          data-cursor="Download"
+          hreflang="en"
+          type="application/pdf"
+          data-cursor={dict.cursor.download}
           data-magnetic="0.35"
           class="group mt-7 inline-flex items-center gap-3 self-start py-2.5 -my-2.5 font-mono text-[12px] font-medium uppercase tracking-[0.2em] text-[var(--color-fg-primary)] transition-colors duration-200 hover:text-[var(--color-rose)]"
         >
-          Download CV
+          {dict.experience.cvLabel}
           <span
             class="text-[var(--color-rose)] transition-transform duration-200 group-hover:translate-y-0.5"
             aria-hidden="true">↓</span>
@@ -123,7 +140,7 @@ const education = {
                     class="fraunces font-light leading-tight text-[var(--color-fg-primary)]"
                     style="font-size: clamp(21px, 2.4vw, 28px);"
                   >
-                    {job.role}
+                    {dict.experience.jobs[job.id]}
                   </h4>
                 </div>
                 <p class="mt-1.5 pl-[19px] text-[16px] text-[var(--color-fg-secondary)]">
@@ -146,7 +163,7 @@ const education = {
               >
                 {job.period}
                 {job.current && (
-                  <span class="ml-2 text-[var(--color-rose)]">· now</span>
+                  <span class="ml-2 text-[var(--color-rose)]">· {dict.experience.now}</span>
                 )}
               </span>
             </li>
@@ -168,7 +185,7 @@ const education = {
                 class="fraunces font-light leading-tight text-[var(--color-fg-primary)]"
                 style="font-size: clamp(19px, 2.1vw, 24px);"
               >
-                {education.degree}
+                {dict.experience.educationDegree}
               </h4>
             </div>
             <p class="mt-1.5 pl-[19px] text-[16px] text-[var(--color-fg-secondary)]">
@@ -191,7 +208,7 @@ const education = {
             style="letter-spacing: 0.18em;"
           >
             <span class="text-[var(--color-rose)]">+</span>
-            Selected roles · nine years in software since 2017
+            {dict.experience.closingNote}
           </p>
         </li>
       </ol>

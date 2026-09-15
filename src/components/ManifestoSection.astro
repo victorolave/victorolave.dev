@@ -1,19 +1,16 @@
 ---
 import Grainient from "./Grainient.astro";
+import { t } from "../i18n";
+import type { Locale } from "../i18n";
 
-const lines = [
-  { word: "Software", italic: false },
-  { word: "is just", italic: true },
-  { word: "opinions,", italic: false },
-  { word: "encoded.", italic: false, accent: true },
-];
+interface Props {
+  locale: Locale;
+}
 
-const lines2 = [
-  { word: "I try", italic: false },
-  { word: "to encode", italic: true },
-  { word: "good", italic: false, accent: true },
-  { word: "ones.", italic: false },
-];
+const { locale } = Astro.props;
+const dict = t(locale);
+const lines = dict.manifesto.lines;
+const lines2 = dict.manifesto.lines2;
 ---
 
 <section
@@ -101,7 +98,7 @@ const lines2 = [
       style="color: rgba(20,23,28,0.6); letter-spacing: 0.32em;"
       data-reveal-child
     >
-      Manifesto · On craft · 2026
+      {dict.manifesto.colophon}
     </div>
   </div>
 </section>

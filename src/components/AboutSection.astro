@@ -1,5 +1,14 @@
 ---
-import { STACK } from "../data/projects";
+import { STACK, pick } from "../data/projects";
+import { t } from "../i18n";
+import type { Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
 ---
 
 <section
@@ -13,20 +22,25 @@ import { STACK } from "../data/projects";
     <div class="mb-16 grid grid-cols-1 gap-12 md:grid-cols-2 md:items-end md:gap-24">
       <!-- LEFT: who -->
       <div data-reveal-child>
-        <div class="eyebrow mb-8">A short biography</div>
+        <div class="eyebrow mb-8">{dict.about.eyebrow}</div>
 
         <h3
           data-fit
           class="fraunces font-light leading-[0.95] tracking-[-0.04em] text-[var(--color-fg-primary)] text-[clamp(48px,7vw,112px)]"
         >
-          <span class="block whitespace-nowrap" data-fit-line>Nine years of</span>
-          <span
-            class="block whitespace-nowrap fraunces-italic text-[var(--color-rose)]"
-            data-fit-line
-          >
-            considered
-          </span>
-          <span class="block whitespace-nowrap" data-fit-line>engineering.</span>
+          {
+            dict.about.heading.map((line) => (
+              <span
+                class:list={[
+                  "block whitespace-nowrap",
+                  line.italic && "fraunces-italic text-[var(--color-rose)]",
+                ]}
+                data-fit-line
+              >
+                {line.text}
+              </span>
+            ))
+          }
         </h3>
       </div>
 
@@ -36,23 +50,13 @@ import { STACK } from "../data/projects";
           class="text-[var(--color-fg-secondary)]"
           style="font-size: clamp(18px, 1.6vw, 22px); line-height: 1.5; letter-spacing: -0.01em;"
         >
-          I design and build the systems behind useful products. Nine years
-          shipping end-to-end, with React and TypeScript on the front and Node
-          and NestJS on the back. Now leaning hard into AI-powered product
-          engineering: LLMs, agents with MCP, RAG, prompt engineering as a
-          product discipline.
+          {dict.about.bio[0]}
         </p>
         <p class="text-[16px] leading-[1.75] text-[var(--color-fg-secondary)]">
-          What I care about, in order: clarity of intent, predictability under
-          load, and giving the next person on the codebase a fair chance. I
-          question requirements before writing code and ship small, opinionated
-          things. Responsible AI by default: guardrails, honest limits, humans
-          in the loop where it counts.
+          {dict.about.bio[1]}
         </p>
         <p class="text-[16px] leading-[1.75] text-[var(--color-fg-secondary)]">
-          Based in Envigado, in the Medellín metro area of Colombia, working with
-          teams across the Aburrá Valley and remotely. Available now for select engagements:
-          contract work, lead-engineer roles, technical advisory.
+          {dict.about.bio[2]}
         </p>
       </div>
     </div>
@@ -61,12 +65,12 @@ import { STACK } from "../data/projects";
     <div class="mt-20 border-t border-[var(--color-border)] pt-12 md:mt-24">
       <div class="grid grid-cols-1 gap-12 md:grid-cols-[280px_1fr] md:gap-24">
         <div data-reveal-child>
-          <div class="eyebrow mb-4">Stack</div>
+          <div class="eyebrow mb-4">{dict.about.stackEyebrow}</div>
           <p
             class="fraunces-italic text-[var(--color-fg-primary)]"
             style="font-size: clamp(28px, 3.2vw, 44px); line-height: 1; letter-spacing: -0.03em;"
           >
-            What I reach for.
+            {dict.about.stackHeadline}
           </p>
         </div>
         <div class="grid grid-cols-2 gap-8 md:grid-cols-4">
@@ -77,10 +81,10 @@ import { STACK } from "../data/projects";
                   class="fraunces-italic mb-4 text-[var(--color-rose)]"
                   style="font-size: 20px;"
                 >
-                  {s.cat}
+                  {pick(s.cat, locale)}
                 </div>
                 <ul class="flex flex-col gap-2">
-                  {s.items.map((item) => (
+                  {pick(s.items, locale).map((item) => (
                     <li class="border-b border-[var(--color-border)] pb-2 text-[16px] text-[var(--color-fg-primary)]">
                       {item}
                     </li>

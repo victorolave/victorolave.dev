@@ -1,7 +1,16 @@
 ---
-import { FEATURED, PROJECTS } from "../data/projects";
+import { FEATURED, PROJECTS, pick } from "../data/projects";
 import FeaturedCase from "./FeaturedCase.astro";
 import Preview from "./previews/Preview.astro";
+import { t } from "../i18n";
+import type { Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
 
 // ── Masonry tiles ────────────────────────────────────────────
 // Three drifting columns over the real projects — three per column. Every
@@ -67,7 +76,7 @@ const receding = [
       FEATURED.map((c, i) => (
         <div class="case-stack__layer" data-stack-item style={`z-index: ${i + 1};`}>
           <div class="case-stack__inner" data-stack-panel>
-            <FeaturedCase caseStudy={c} reverse={i % 2 === 1} />
+            <FeaturedCase caseStudy={c} reverse={i % 2 === 1} locale={locale} />
           </div>
         </div>
       ))
@@ -86,13 +95,13 @@ const receding = [
       class="mb-10 flex flex-wrap items-end justify-between gap-4 border-t border-[var(--color-border)] pt-8 md:mb-14 md:pt-12"
       data-reveal
     >
-      <div class="eyebrow" data-reveal-child>The full shelf</div>
+      <div class="eyebrow" data-reveal-child>{dict.work.shelfEyebrow}</div>
       <span
         class="font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)]"
         style="letter-spacing: 0.22em;"
         data-reveal-child
       >
-        Selected work · 2023–2026
+        {dict.work.shelfMeta}
       </span>
     </div>
 
@@ -108,22 +117,24 @@ const receding = [
               data-parallax
               data-parallax-speed={col.speed}
             >
-              {col.items.map((t) => {
-                const p = t.p;
+              {col.items.map((entry) => {
+                const p = entry.p;
+                const title = pick(p.title, locale);
                 const href = p.link ? `https://${p.link}` : null;
                 // Screenshot tiles are sized by ratio; plates keep the fixed height.
                 const sized = p.image && p.imageW && p.imageH;
                   const card = (
                     <div
-                      class={`masonry-card group relative w-full overflow-hidden rounded-[3px] border border-[var(--color-border)] bg-[#161922] transition-[border-color,box-shadow] duration-500 ${sized ? "" : t.h}`}
+                      class={`masonry-card group relative w-full overflow-hidden rounded-[3px] border border-[var(--color-border)] bg-[#161922] transition-[border-color,box-shadow] duration-500 ${sized ? "" : entry.h}`}
                       style={sized ? `aspect-ratio: ${p.imageW} / ${p.imageH};` : undefined}
                     >
                       <div class="absolute inset-0">
                         <Preview
                           image={p.image}
-                          title={p.title}
+                          title={title}
                           stack={p.stack}
                           fit={sized ? "contain" : "cover"}
+                          locale={locale}
                         />
                       </div>
                       {/* Caption scrim. Now that tiles show the whole page, the
@@ -136,7 +147,7 @@ const receding = [
                             class="fraunces text-[16px] text-[var(--color-fg-primary)]"
                             style="letter-spacing: -0.02em;"
                           >
-                            {p.title}
+                            {title}
                           </div>
                           <div
                             class="mt-1 font-mono text-[9px] uppercase text-[var(--color-fg-tertiary)]"
@@ -160,9 +171,9 @@ const receding = [
                     target="_blank"
                     rel="noopener noreferrer"
                     data-reveal-child
-                    data-cursor="View"
+                    data-cursor={dict.cursor.view}
                     class="block"
-                    aria-label={`View ${p.title}`}
+                    aria-label={dict.a11y.viewProject(title)}
                   >
                     {card}
                   </a>
@@ -187,8 +198,8 @@ const receding = [
           class="fraunces text-center font-light leading-[0.9] tracking-[-0.04em] text-[var(--color-fg-primary)]"
           style="font-size: clamp(48px, 7vw, 132px);"
         >
-          Far more than{" "}
-          <em class="fraunces-italic text-[var(--color-rose)]">fits here.</em>
+          {dict.work.moreStatementPre}{" "}
+          <em class="fraunces-italic text-[var(--color-rose)]">{dict.work.moreStatementItalic}</em>
         </p>
       </div>
     </div>
@@ -214,9 +225,10 @@ const receding = [
               <div class="absolute inset-0">
                 <Preview
                   image={r.p.image}
-                  title={r.p.title}
+                  title={pick(r.p.title, locale)}
                   stack={r.p.stack}
                   fit={r.p.image && r.p.imageW && r.p.imageH ? "contain" : "cover"}
+                  locale={locale}
                 />
               </div>
               {i === 0 && (
@@ -225,7 +237,7 @@ const receding = [
                     class="fraunces text-[16px] text-[var(--color-fg-primary)]"
                     style="letter-spacing: -0.02em;"
                   >
-                    {r.p.title}
+                    {pick(r.p.title, locale)}
                   </div>
                 </div>
               )}
@@ -241,8 +253,8 @@ const receding = [
         class="fraunces font-light leading-[0.92] tracking-[-0.04em] text-[var(--color-fg-primary)]"
         style="font-size: clamp(40px, 12vw, 72px);"
       >
-        Far more than{" "}
-        <em class="fraunces-italic text-[var(--color-rose)]">fits here.</em>
+        {dict.work.moreStatementPre}{" "}
+        <em class="fraunces-italic text-[var(--color-rose)]">{dict.work.moreStatementItalic}</em>
       </p>
     </div>
    </div>

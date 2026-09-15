@@ -1,10 +1,16 @@
 ---
-const steps = [
-  { n: "01", title: "Listen", desc: "Map the territory before drawing the map." },
-  { n: "02", title: "Frame", desc: "One user, one outcome, one week of work." },
-  { n: "03", title: "Build", desc: "Ship small and pointed. Deploy day one." },
-  { n: "04", title: "Refine", desc: "Harden the seams, document, hand off clean." },
-];
+import { t } from "../i18n";
+import type { Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+
+const nums = ["01", "02", "03", "04"];
+const steps = dict.process.steps.map((s, i) => ({ n: nums[i], ...s }));
 ---
 
 <section
@@ -27,7 +33,7 @@ const steps = [
               class="font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)]"
               style="letter-spacing: 0.22em;"
             >
-              Step {i + 1} / 4
+              {dict.process.stepOf(i + 1)}
             </span>
 
             <div class="flex items-baseline gap-6">

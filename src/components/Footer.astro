@@ -1,11 +1,21 @@
 ---
+import { t } from "../i18n";
+import type { Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+
 const year = new Date().getFullYear();
 const email = "victorolave1131@gmail.com";
 
 const nav = [
-  { id: "work", label: "Work" },
-  { id: "about", label: "About" },
-  { id: "contact", label: "Contact" },
+  { id: "work", label: dict.sections.work },
+  { id: "about", label: dict.sections.about },
+  { id: "contact", label: dict.sections.contact },
 ];
 
 const socials = [
@@ -36,7 +46,7 @@ const linkClass =
          ============================================================ -->
     <div class="md:hidden">
       <!-- Wordmark -->
-      <a href="#hero" data-cursor="Top" class="group inline-block">
+      <a href="#hero" data-cursor={dict.cursor.top} class="group inline-block">
         <span
           class="fraunces font-light leading-[0.9] tracking-[-0.04em] text-[var(--color-fg-primary)]"
           style="font-size: clamp(44px, 13vw, 60px);"
@@ -50,11 +60,11 @@ const linkClass =
       <!-- Primary CTA: email -->
       <a
         href={`mailto:${email}`}
-        data-cursor="Send"
+        data-cursor={dict.cursor.send}
         class="footer-email group mt-8 flex items-center justify-between gap-4 border-y border-[var(--color-border)] py-5"
       >
         <span class="flex flex-col gap-1.5">
-          <span class="eyebrow">Let's talk</span>
+          <span class="eyebrow">{dict.footer.letsTalk}</span>
           <span
             class="fraunces-italic font-light text-[var(--color-fg-primary)] transition-colors duration-300 group-hover:text-[var(--color-rose)]"
             style="font-size: clamp(22px, 6vw, 28px); letter-spacing: -0.01em;"
@@ -72,7 +82,7 @@ const linkClass =
 
       <!-- Directory: menu -->
       <nav class="mt-9">
-        <span class="sheet-mark">MENU</span>
+        <span class="sheet-mark">{dict.footer.menu}</span>
         <div class="mt-3 flex flex-col">
           {nav.map((l) => (
             <a
@@ -98,14 +108,14 @@ const linkClass =
 
       <!-- Directory: socials -->
       <div class="mt-9">
-        <span class="sheet-mark">ELSEWHERE</span>
+        <span class="sheet-mark">{dict.footer.elsewhere}</span>
         <div class="mt-3 flex flex-col">
           {socials.map((s) => (
             <a
               href={s.href}
               target="_blank"
               rel="noopener noreferrer"
-              data-cursor="View"
+              data-cursor={dict.cursor.view}
               class="group flex items-center justify-between border-b border-[var(--color-border)] py-3.5"
             >
               <span class="flex items-center gap-3">
@@ -153,7 +163,7 @@ const linkClass =
       <div
         class="flex flex-col gap-8 md:flex-row md:items-end md:justify-between"
       >
-        <a href="#hero" data-cursor="Top" class="group inline-block">
+        <a href="#hero" data-cursor={dict.cursor.top} class="group inline-block">
           <span
             class="fraunces font-light leading-[0.9] tracking-[-0.04em] text-[var(--color-fg-primary)]"
             style="font-size: clamp(40px, 7vw, 84px);"
@@ -166,7 +176,7 @@ const linkClass =
 
         <a
           href={`mailto:${email}`}
-          data-cursor="Send"
+          data-cursor={dict.cursor.send}
           data-magnetic="0.4"
           class="footer-email group inline-flex items-center gap-2 fraunces-italic font-light text-[var(--color-fg-secondary)] transition-colors duration-300 hover:text-[var(--color-rose)]"
           style="font-size: clamp(19px, 2vw, 26px); letter-spacing: -0.01em;"
@@ -208,7 +218,7 @@ const linkClass =
               href={s.href}
               target="_blank"
               rel="noopener noreferrer"
-              data-cursor="View"
+              data-cursor={dict.cursor.view}
               aria-label={s.label}
               class="inline-flex h-11 w-11 items-center justify-center -m-1 text-[var(--color-fg-secondary)] transition-colors duration-200 hover:text-[var(--color-rose)]"
             >

@@ -1,12 +1,14 @@
 ---
-const lines = [
-  { label: "Reading", value: '"A Pattern Language" by Christopher Alexander', kind: "book" },
-  { label: "Building", value: "A small CLI for ergonomic Postgres migrations", kind: "wip" },
-  { label: "Listening", value: "Sufjan Stevens, Caetano Veloso, lots of Bach", kind: "audio" },
-  { label: "Watching", value: "Severance S3, and the Mubi back catalog", kind: "watch" },
-  { label: "City", value: "Envigado, Colombia · GMT-5", kind: "place" },
-  { label: "Status", value: "Available for new engagements", kind: "work" },
-];
+import { t } from "../i18n";
+import type { Locale } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+const lines = dict.now.lines;
 ---
 
 <section
@@ -24,21 +26,20 @@ const lines = [
           class="fraunces font-light leading-[1] tracking-[-0.04em] text-[var(--color-fg-primary)]"
           style="font-size: clamp(40px, 5vw, 76px);"
         >
-          A small<br />
-          <em class="fraunces-italic text-[var(--color-rose)]">logbook</em>.
+          {dict.now.headingPre}<br />
+          <em class="fraunces-italic text-[var(--color-rose)]">{dict.now.headingItalic}</em>.
         </p>
         <p
           class="mt-8 max-w-[360px] text-[16px] leading-[1.7] text-[var(--color-fg-secondary)]"
         >
-          Where my attention is, this season. Updated when something genuinely
-          shifts, about every six weeks.
+          {dict.now.intro}
         </p>
         <div
           class="mt-12 inline-flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--color-fg-tertiary)]"
           style="letter-spacing: 0.22em;"
         >
           <span class="h-2 w-2 animate-pulse rounded-full bg-[var(--color-rose)]"></span>
-          Last updated · May 2026
+          {dict.now.lastUpdated}
         </div>
       </div>
 

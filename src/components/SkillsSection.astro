@@ -3,47 +3,16 @@
 //  · left  — label, heavy UPPERCASE headline (split-char), rule, CTA, bouncing arrow
 //  · right — vertical accordion of technical categories (CSS grid-rows animation,
 //            progressive-enhanced: open without JS, collapsible with JS)
+import { t } from "../i18n";
+import type { Locale } from "../i18n";
 
-const categories = [
-  {
-    name: "AI engineering",
-    items: [
-      "LLM integration (Claude, OpenAI)",
-      "Agentic systems & MCP",
-      "RAG architectures",
-      "Prompt engineering",
-      "Responsible AI",
-    ],
-  },
-  {
-    name: "Frontend",
-    items: ["React", "TypeScript", "Next.js", "Angular", "Astro", "Tailwind CSS"],
-  },
-  {
-    name: "Animation & 3D",
-    items: ["Motion One", "GSAP", "Three.js", "WebGL", "Lenis", "Canvas"],
-  },
-  {
-    name: "Backend",
-    items: ["Node.js", "NestJS", "Express", "REST", "GraphQL", "WebSockets"],
-  },
-  {
-    name: "Databases",
-    items: ["PostgreSQL", "MongoDB", "Redis", "Prisma", "Drizzle"],
-  },
-  {
-    name: "DevOps & Tools",
-    items: ["Docker", "GitHub Actions", "Vercel", "Railway", "AWS", "Git"],
-  },
-  {
-    name: "System & Security",
-    items: ["OAuth / JWT", "Hexagonal Arch.", "Testing", "CI/CD", "Observability"],
-  },
-  {
-    name: "Design",
-    items: ["Figma", "Design Systems", "Atomic Design", "Accessibility"],
-  },
-];
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+const categories = dict.skills.categories;
 ---
 
 <section
@@ -55,16 +24,16 @@ const categories = [
   >
     <!-- Left column -->
     <div class="flex flex-col" data-reveal>
-      <span class="eyebrow" data-reveal-child>Skills</span>
+      <span class="eyebrow" data-reveal-child>{dict.skills.eyebrow}</span>
 
       <h3
         data-reveal-child
         class="mt-7 fraunces font-light leading-[1] tracking-[-0.04em] text-[var(--color-fg-primary)]"
         style="font-size: clamp(34px, 4.4vw, 64px);"
       >
-        I build software that <em
-          class="fraunces-italic text-[var(--color-rose)]">scales</em
-        > and <em class="fraunces-italic text-[var(--color-rose)]">endures</em>.
+        {dict.skills.headingPre} <em
+          class="fraunces-italic text-[var(--color-rose)]">{dict.skills.scales}</em
+        > {dict.skills.and} <em class="fraunces-italic text-[var(--color-rose)]">{dict.skills.endures}</em>.
       </h3>
 
       <div
@@ -77,10 +46,10 @@ const categories = [
       <div class="mt-9 flex items-center justify-between" data-reveal-child>
         <a
           href="#contact"
-          data-cursor="Say hi"
+          data-cursor={dict.cursor.sayHi}
           class="group inline-flex items-center gap-3 py-2.5 -my-2.5 font-mono text-[12px] font-medium uppercase tracking-[0.2em] text-[var(--color-fg-primary)] transition-colors duration-200 hover:text-[var(--color-rose)]"
         >
-          Contact me
+          {dict.skills.contactCta}
           <span class="fraunces-italic text-[var(--color-rose)]">✦</span>
         </a>
 

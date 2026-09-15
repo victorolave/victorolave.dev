@@ -1,41 +1,52 @@
 ---
 import "../styles/global.css";
+import { absUrl, LOCALE_META, t } from "../i18n";
+import type { Locale } from "../i18n";
 
 interface Props {
-  title?: string;
-  description?: string;
+  locale: Locale;
 }
 
-const {
-  // Role and place up front: the title is the strongest on-page signal for
-  // "developer in Medellín" searches. Google truncates by pixel width (~600px),
-  // which this fits; keep additions short.
-  title = "Victor Olave · Senior Fullstack Developer · Medellín, Colombia",
-  // ≤155 characters, or Google truncates it in results.
-  description = "Senior fullstack developer in Envigado, Medellín area, Colombia. Nine years of React, TypeScript and Node.js, now building AI products: LLMs, MCP, RAG.",
-} = Astro.props;
+const { locale } = Astro.props;
+const dict = t(locale);
+const meta = LOCALE_META[locale];
+const other: Locale = locale === "es" ? "en" : "es";
 
-// Absolute URLs for og:/twitter: — relative paths are ignored by every social
-// crawler. Astro.site comes from `site` in astro.config.mjs; the fallback only
+// Absolute URLs for og:/twitter:/canonical/hreflang — relative paths are
+// ignored by every social crawler and would be wrong for hreflang anyway.
+// Astro.site comes from `site` in astro.config.mjs; the fallback only
 // matters in a build that has lost it, and would bake in the dev origin.
 const origin = Astro.site ?? new URL(Astro.url.origin);
-const canonical = new URL(Astro.url.pathname, origin).href;
-const ogImage = new URL("/og-image.jpg", origin).href;
-const home = new URL("/", origin).href;
+const canonical = absUrl(locale, origin).href;
+const esUrl = absUrl("es", origin).href;
+const enUrl = absUrl("en", origin).href;
+// x-default points at English per design: the site targets Spanish speakers
+// generally at "/", but crawlers without a locale match land on EN.
+const xDefaultUrl = enUrl;
+// Person's canonical identity stays anchored to the ES home in both locales'
+// JSON-LD, so the @id is identical and social graphs don't fork the profile.
+const home = esUrl;
+const ogImage = new URL(meta.ogImage, origin).href;
+
+const title = dict.meta.title;
+const description = dict.meta.description;
+const jobTitle = locale === "es" ? "Desarrollador Fullstack Senior" : "Senior Fullstack Developer";
 
 // Structured data: who this page is about, where he works and what he knows.
-// Every value is backed by the page or the CV — do not add claims here that the
-// visible content does not make. `areaServed` is not a Person property, so the
-// Medellín area is expressed through the occupation's location instead.
+// Every value is backed by the page or the CV — do not add claims here that
+// the visible content does not make. `areaServed` is not a Person property,
+// so the Medellín area is expressed through the occupation's location
+// instead. ProfilePage wraps the shared Person node so each locale carries
+// its own `inLanguage` while both point at the same `Person` `@id`.
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "ProfilePage",
-      "@id": `${home}#profile`,
+      "@id": `${canonical}#profile`,
       url: canonical,
       name: title,
-      inLanguage: "en",
+      inLanguage: locale,
       mainEntity: { "@id": `${home}#person` },
     },
     {
@@ -43,7 +54,7 @@ const jsonLd = {
       "@id": `${home}#person`,
       name: "Victor Olave",
       url: home,
-      jobTitle: "Senior Fullstack Developer",
+      jobTitle,
       description,
       email: "mailto:victorolave1131@gmail.com",
       address: {
@@ -54,7 +65,7 @@ const jsonLd = {
       },
       hasOccupation: {
         "@type": "Occupation",
-        name: "Senior Fullstack Developer",
+        name: jobTitle,
         occupationLocation: [
           { "@type": "City", name: "Medellín" },
           { "@type": "City", name: "Envigado" },
@@ -84,7 +95,7 @@ const jsonLd = {
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={meta.htmlLang}>
   <head>
     <script is:inline>
       // Mark JS available before first paint so we can hide reveal-targets via CSS
@@ -108,6 +119,9 @@ const jsonLd = {
     />
 
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="es" href={esUrl} />
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="x-default" href={xDefaultUrl} />
 
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -116,9 +130,10 @@ const jsonLd = {
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Victor Olave · Senior Fullstack Developer" />
+    <meta property="og:image:alt" content={dict.meta.ogImageAlt} />
     <meta property="og:site_name" content="Victor Olave" />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content={meta.ogLocale} />
+    <meta property="og:locale:alternate" content={LOCALE_META[other].ogLocale} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
