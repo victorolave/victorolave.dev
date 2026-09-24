@@ -263,20 +263,6 @@ export const PROJECTS: Project[] = [
     imageH: 605,
   },
   {
-    // Client software, shown anonymised by choice: no product name, no
-    // logo, no link. The screenshot has the institution's logo and copyright
-    // line hidden. Do not put the product or university name back.
-    title: { en: "University lab platform", es: "Plataforma de laboratorios universitaria" },
-    desc: "Laboratory management for a university engineering faculty: reservations, resources, spaces and users, on a web app backed by its own API.",
-    stack: ["Next.js", "Mantine", "TanStack Query", "NestJS", "Prisma"],
-    statuses: ["In progress"],
-    year: "2024",
-    link: null,
-    image: "/work/labs-login.webp",
-    imageW: 1200,
-    imageH: 675,
-  },
-  {
     // The repo is public but has no licence file, so it is not marked
     // "Open source". Add the status once a licence lands.
     title: "Dádiva",

@@ -13,8 +13,7 @@ const { locale } = Astro.props;
 const dict = t(locale);
 
 // ── Masonry tiles ────────────────────────────────────────────
-// Three drifting columns over the real projects — three per column, four in
-// the one that started shortest (the third). Every
+// Three drifting columns over the real projects — three per column. Every
 // tile is a project; there are no filler tiles. Plinto has two (app panel and
 // landing), kept in different columns so the wall never shows them adjacent.
 //
@@ -39,7 +38,7 @@ const columns = [
     items: [
       { p: PROJECTS[2], h: "h-[300px]" }, // Acopio Colombia
       { p: PROJECTS[5], h: "h-[260px]" }, // Dev Senior Code Junior
-      { p: PROJECTS[8], h: "h-[280px]" }, // University lab platform
+      { p: PROJECTS[8], h: "h-[300px]" }, // Dádiva
     ],
   },
   {
@@ -47,7 +46,6 @@ const columns = [
     offset: "md:mt-10",
     items: [
       { p: PROJECTS[1], h: "h-[320px]" }, // EYP Logistics
-      { p: PROJECTS[9], h: "h-[300px]" }, // Dádiva
       { p: PROJECTS[6], h: "h-[280px]" }, // Pumas de Antioquia
       { p: PROJECTS[4], h: "h-[240px]" }, // Plinto (app)
     ],
