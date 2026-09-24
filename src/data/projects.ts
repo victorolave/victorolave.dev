@@ -276,6 +276,19 @@ export const PROJECTS: Project[] = [
     imageW: 1200,
     imageH: 675,
   },
+  {
+    // The repo is public but has no licence file, so it is not marked
+    // "Open source". Add the status once a licence lands.
+    title: "Dádiva",
+    desc: "Secret Santa with a promise: groups by invite code, a draw that runs on the server and that row-level security keeps hidden even from the organiser, wish lists, and a deck of Bible-verse cards each person draws once and keeps.",
+    stack: ["React", "Supabase", "GSAP", "Tailwind", "Vercel"],
+    statuses: ["Live"],
+    year: "2026",
+    link: "dadiva-gray.vercel.app",
+    image: "/work/dadiva.webp",
+    imageW: 1200,
+    imageH: 802,
+  },
 ];
 
 export const FEATURED: FeaturedCase[] = [
