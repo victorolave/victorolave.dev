@@ -22,3 +22,8 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# local working material — kept on disk, not published
+design_resources/
+qa/
+.atl/
